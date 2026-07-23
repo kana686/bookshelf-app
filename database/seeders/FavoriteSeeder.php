@@ -20,7 +20,7 @@ class FavoriteSeeder extends Seeder
         foreach ($users as $user) {
             $randomBooks = $books->random(rand(3, 5));
 
-            $user->favorites()->syncWithoutDetaching($randomBooks);
+            $user->favoriteBooks()->syncWithoutDetaching($randomBooks);
         }
     }
 }
