@@ -15,3 +15,11 @@ Route::controller(AuthenticatedSessionController::class)->group(function () {
 });
 
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+
+Route::get('/', function () {
+    return view('books.index');
+})->name('books.index'); // 仮ルート
+
+Route::get('/books/create', function () {
+    return '仮の書籍作成画面';
+})->name('books.create'); // 仮ルート
