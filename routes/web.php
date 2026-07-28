@@ -1,18 +1,25 @@
 <?php
 
+use App\Http\Controllers\AuthenticatedSessionController;
+use App\Http\Controllers\RegisteredUserController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
+Route::controller(RegisteredUserController::class)->group(function () {
+    Route::get('/register', 'create')->name('register');
+    Route::post('/register', 'store')->name('register');
+});
+
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
+    Route::post('/login', [AuthenticatedSessionController::class, 'store']);
+});
+
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
 Route::get('/', function () {
-    return view('welcome');
-});
+    return view('books.index');
+})->name('books.index'); // 仮ルート
+
+Route::get('/books/create', function () {
+    return '仮の書籍作成画面';
+})->name('books.create'); // 仮ルート
