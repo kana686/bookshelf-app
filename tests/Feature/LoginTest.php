@@ -70,7 +70,7 @@ class LoginTest extends TestCase
 
         $response = $this->actingAs($user)->get('/login');
 
-        $response->assertRedirect('/books');
+        $response->assertRedirect('/');
     }
 
     public function test_ログアウトができる()
