@@ -35,17 +35,17 @@ class ReviewRelationTest extends TestCase
         $this->assertInstanceOf(Book::class, $review->book);
     }
 
-    public function test_users_who_likedリレーションが正しく定義されている(): void
+    public function test_liked_by_usersリレーションが正しく定義されている(): void
     {
-        $review = Review::has('usersWhoLiked')->first();
+        $review = Review::has('likedByUsers')->first();
 
         if (! $review) {
             $review = Review::first();
             $user = User::first();
-            $review->usersWholiked()->attach($user->id);
+            $review->likedByUsers()->attach($user->id);
         }
 
-        $this->assertNotEmpty($review->usersWhoLiked);
-        $this->assertInstanceOf(User::class, $review->usersWhoLiked->first());
+        $this->assertNotEmpty($review->likedByUsers);
+        $this->assertInstanceOf(User::class, $review->likedByUsers->first());
     }
 }
