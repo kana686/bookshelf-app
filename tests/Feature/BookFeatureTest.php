@@ -65,7 +65,7 @@ class BookFeatureTest extends TestCase
         $response = $this->get("/books/{$book->id}");
         $response->assertStatus(200);
 
-        $response->assertViewHas('books', function ($viewBook) use ($book) {
+        $response->assertViewHas('book', function ($viewBook) use ($book) {
             return $viewBook->id === $book->id;
         });
 
