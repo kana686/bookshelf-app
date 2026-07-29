@@ -13,6 +13,6 @@ class BookService
 
     public function getBookById(int $id)
     {
-        return Book::with(['genres', 'reviews.user', 'favorites'])->findOrFail($id);
+        return Book::with(['genres', 'reviews.user', 'usersWhoFavorited'])->findOrFail($id);
     }
 }
