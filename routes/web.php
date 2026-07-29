@@ -26,3 +26,15 @@ Route::controller(BookController::class)->group(function () {
 Route::get('/books/create', function () {
     return '仮の書籍作成画面';
 })->name('books.create'); // 仮ルート
+
+Route::get('/ranking', function () {
+    return 'ランキング画面';
+})->name('ranking.index'); // 仮ルート
+
+Route::get('/favorites', function () {
+    return 'お気に入り一覧画面';
+})->name('favorites.index'); // 仮ルート
+
+Route::get('/genres', function () {
+    return 'ジャンル一覧画面';
+})->name('genres.index'); // 仮ルート
