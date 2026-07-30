@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthenticatedSessionController;
+use App\Http\Controllers\BookController;
 use App\Http\Controllers\RegisteredUserController;
 use Illuminate\Support\Facades\Route;
 
@@ -16,10 +17,24 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
-Route::get('/', function () {
-    return view('books.index');
-})->name('books.index'); // 仮ルート
+Route::controller(BookController::class)->group(function () {
+    Route::get('/', 'index')->name('home');
+    Route::get('/books', 'index')->name('books.index');
+    Route::get('/books/{book}', 'show')->name('books.show');
+});
 
 Route::get('/books/create', function () {
     return '仮の書籍作成画面';
 })->name('books.create'); // 仮ルート
+
+Route::get('/ranking', function () {
+    return 'ランキング画面';
+})->name('ranking.index'); // 仮ルート
+
+Route::get('/favorites', function () {
+    return 'お気に入り一覧画面';
+})->name('favorites.index'); // 仮ルート
+
+Route::get('/genres', function () {
+    return 'ジャンル一覧画面';
+})->name('genres.index'); // 仮ルート
