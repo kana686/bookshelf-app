@@ -148,7 +148,7 @@ class BookFeatureTest extends TestCase
 
     public function test_書籍詳細画面が正しく表示されること()
     {
-        $book = Book::with('genres')->first();
+        $book = Book::with(['genres', 'reviews'])->first();
 
         $this->assertNotNull($book, '検証用の書籍データが存在しません');
 
@@ -165,6 +165,10 @@ class BookFeatureTest extends TestCase
 
         if ($book->genres->isNotEmpty()) {
             $response->assertSee($book->genres->first()->name);
+        }
+
+        foreach ($book->reviews as $review) {
+            $response->assertSee($review->comment);
         }
     }
 }
