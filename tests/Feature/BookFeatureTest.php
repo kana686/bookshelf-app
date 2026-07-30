@@ -18,7 +18,7 @@ class BookFeatureTest extends TestCase
         $this->seed(DatabaseSeeder::class);
     }
 
-    public function test_ゲストがbooks画面にアクセスし10件表示されること()
+    public function test_ゲストがのbooks画面にアクセスし10件表示されること()
     {
         $response = $this->get('/books');
         $response->assertStatus(200);
