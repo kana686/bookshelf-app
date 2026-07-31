@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Book;
 use App\Models\Genre;
+use Illuminate\Support\Facades\Auth;
 
 class BookService
 {
