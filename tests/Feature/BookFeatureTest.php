@@ -216,8 +216,10 @@ class BookFeatureTest extends TestCase
             'user_id' => $user->id,
         ]);
 
-        $response->assertRedirect(route('books.index'));
-        $response->assertSessionHas('status', '書籍を登録しました');
+        $book = Book::where('title', 'テスト登録書籍')->latest()->first();
+
+        $response->assertRedirect(route('books.show', $book));
+        $response->assertSessionHas('success', '書籍を登録しました');
     }
 
     public function test_タイトルが未入力の場合バリデーションメッセージが表示される()
