@@ -34,7 +34,9 @@ class BookController extends Controller
 
     public function create()
     {
-        return view('books.create');
+        $genres = $this->bookService->getAllGenres();
+
+        return view('books.create', compact('genres'));
     }
 
     public function store(BookRequest $request)
@@ -49,7 +51,10 @@ class BookController extends Controller
     {
         $this->authorize('update', $book);
 
-        return view('books.edit', compact('book'));
+        $book = $this->bookService->getBookById($book->id);
+        $genres = $this->bookService->getAllGenres();
+
+        return view('books.edit', compact('book', 'genres'));
     }
 
     public function update(BookRequest $request, Book $book)

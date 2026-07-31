@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Book;
+use App\Models\Genre;
 
 class BookService
 {
@@ -14,6 +15,11 @@ class BookService
     public function getBookById(int $id)
     {
         return Book::with(['genres', 'reviews.user', 'usersWhoFavorited'])->findOrFail($id);
+    }
+
+    public function getAllGenres()
+    {
+        return Genre::all();
     }
 
     public function createBook(array $data): Book
