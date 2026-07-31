@@ -20,18 +20,17 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name
 Route::get('/', [BookController::class, 'index'])->name('home');
 
 Route::controller(BookController::class)->group(function () {
-
-    Route::prefix('books')->group(function () {
-        Route::get('', 'index')->name('books.index');
-        Route::get('{book}', 'show')->name('books.show');
-    });
-
     Route::prefix('books')->middleware('auth')->group(function () {
         Route::get('create', 'create')->name('books.create');
         Route::post('', 'store')->name('books.store');
         Route::get('{book}/edit', 'edit')->name('books.edit');
         Route::put('{book}', 'update')->name('books.update');
         Route::delete('{book}', 'destroy')->name('books.destroy');
+    });
+
+    Route::prefix('books')->group(function () {
+        Route::get('', 'index')->name('books.index');
+        Route::get('{book}', 'show')->name('books.show');
     });
 });
 
