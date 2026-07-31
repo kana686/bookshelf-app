@@ -17,15 +17,23 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
-Route::controller(BookController::class)->group(function () {
-    Route::get('/', 'index')->name('home');
-    Route::get('/books', 'index')->name('books.index');
-    Route::get('/books/{book}', 'show')->name('books.show');
-});
+Route::get('/', [BookController::class, 'index'])->name('home');
 
-Route::get('/books/create', function () {
-    return '仮の書籍作成画面';
-})->name('books.create'); // 仮ルート
+Route::controller(BookController::class)->group(function () {
+
+    Route::prefix('books')->group(function () {
+        Route::get('', 'index')->name('books.index');
+        Route::get('{book}', 'show')->name('books.show');
+    });
+
+    Route::prefix('books')->middleware('auth')->group(function () {
+        Route::get('create', 'create')->name('books.create');
+        Route::post('', 'store')->name('books.store');
+        Route::get('{book}/edit', 'edit')->name('books.edit');
+        Route::put('{book}', 'update')->name('books.update');
+        Route::delete('{book}', 'destroy')->name('books.destroy');
+    });
+});
 
 Route::get('/ranking', function () {
     return 'ランキング画面';
