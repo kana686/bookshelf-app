@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthenticatedSessionController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\RegisteredUserController;
+use App\Models\Book;
 use Illuminate\Support\Facades\Route;
 
 Route::controller(RegisteredUserController::class)->group(function () {
@@ -32,6 +33,24 @@ Route::controller(BookController::class)->group(function () {
         Route::get('', 'index')->name('books.index');
         Route::get('{book}', 'show')->name('books.show');
     });
+});
+
+Route::middleware('auth')->group(function () {
+    Route::post('/books/{book}/favorite', function (Book $book) {
+        $user = auth()->user();
+
+        $user->favoriteBooks()->toggle($book->id);
+
+        return back();
+    })->name('favorites.toggle'); // 仮ルート
+
+    Route::post('/books/{book}/reviews', function (Book $book) {
+        return back();
+    })->name('reviews.store'); // 仮ルート
+
+    Route::post('/reviews/{review}/like', function ($reviewId) {
+        return back();
+    })->name('reviews.like'); // 仮ルート
 });
 
 Route::get('/ranking', function () {
