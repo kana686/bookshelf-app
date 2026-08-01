@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthenticatedSessionController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\RegisteredUserController;
+use App\Models\Book;
 use Illuminate\Support\Facades\Route;
 
 Route::controller(RegisteredUserController::class)->group(function () {
@@ -17,15 +18,40 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
+Route::get('/', [BookController::class, 'index'])->name('home');
+
 Route::controller(BookController::class)->group(function () {
-    Route::get('/', 'index')->name('home');
-    Route::get('/books', 'index')->name('books.index');
-    Route::get('/books/{book}', 'show')->name('books.show');
+    Route::prefix('books')->middleware('auth')->group(function () {
+        Route::get('create', 'create')->name('books.create');
+        Route::post('', 'store')->name('books.store');
+        Route::get('{book}/edit', 'edit')->name('books.edit');
+        Route::put('{book}', 'update')->name('books.update');
+        Route::delete('{book}', 'destroy')->name('books.destroy');
+    });
+
+    Route::prefix('books')->group(function () {
+        Route::get('', 'index')->name('books.index');
+        Route::get('{book}', 'show')->name('books.show');
+    });
 });
 
-Route::get('/books/create', function () {
-    return '仮の書籍作成画面';
-})->name('books.create'); // 仮ルート
+Route::middleware('auth')->group(function () {
+    Route::post('/books/{book}/favorite', function (Book $book) {
+        $user = auth()->user();
+
+        $user->favoriteBooks()->toggle($book->id);
+
+        return back();
+    })->name('favorites.toggle'); // 仮ルート
+
+    Route::post('/books/{book}/reviews', function (Book $book) {
+        return back();
+    })->name('reviews.store'); // 仮ルート
+
+    Route::post('/reviews/{review}/like', function ($reviewId) {
+        return back();
+    })->name('reviews.like'); // 仮ルート
+});
 
 Route::get('/ranking', function () {
     return 'ランキング画面';
