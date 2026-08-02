@@ -143,14 +143,14 @@ class ReviewFeatureTest extends TestCase
 
         $response = $this->actingAs($user)->put(route('reviews.update', $review), $updateData);
 
+        $response->assertRedirect(route('books.show', $book));
+        $response->assertSessionHas('success', 'レビューを更新しました');
+
         $this->assertDatabaseHas('reviews', [
             'id' => $review->id,
             'rating' => 5,
             'comment' => '更新後コメント',
         ]);
-
-        $response->assertRedirect(route('books.show', $book));
-        $response->assertSessionHas('success', 'レビューを更新しました');
     }
 
     public function test_他人が投稿したレビューの編集画面にアクセスした場合エラーになる()
@@ -185,12 +185,12 @@ class ReviewFeatureTest extends TestCase
 
         $response = $this->actingAs($user)->delete(route('reviews.destroy', $review));
 
+        $response->assertRedirect(route('books.show', $book));
+        $response->assertSessionHas('success', 'レビューを削除しました');
+
         $this->assertDatabaseMissing('reviews', [
             'id' => $review->id,
         ]);
-
-        $response->assertRedirect(route('books.show', $book));
-        $response->assertSessionHas('success', 'レビューを削除しました');
     }
 
     public function test_他人が投稿したレビューを削除しようとした場合エラーになる()
