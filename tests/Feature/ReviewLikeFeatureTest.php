@@ -28,7 +28,7 @@ class ReviewLikeFeatureTest extends TestCase
 
         $response = $this->actingAs($user)->post(route('reviews.like', $review));
 
-        $this->assertDatabaseHas('likes', [
+        $this->assertDatabaseHas('review_likes', [
             'review_id' => $review->id,
             'user_id' => $user->id,
         ]);
@@ -66,7 +66,7 @@ class ReviewLikeFeatureTest extends TestCase
 
         $response = $this->actingAs($user)->post(route('reviews.like', $review));
 
-        $this->assertDatabaseMissing('likes', [
+        $this->assertDatabaseMissing('review_likes', [
             'review_id' => $review->id,
             'user_id' => $user->id,
         ]);
