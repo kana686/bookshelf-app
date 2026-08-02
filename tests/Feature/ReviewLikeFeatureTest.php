@@ -60,9 +60,7 @@ class ReviewLikeFeatureTest extends TestCase
 
         $this->assertNotNull($review, '検証用の他人レビューが存在しません');
 
-        $review->likes()->create([
-            'user_id' => $user->id,
-        ]);
+        $review->likedByUsers()->attach($user->id);
 
         $response = $this->actingAs($user)->post(route('reviews.like', $review));
 
@@ -81,9 +79,7 @@ class ReviewLikeFeatureTest extends TestCase
 
         $this->assertNotNull($review, '検証用の他人レビューが存在しません');
 
-        $review->likes()->create([
-            'user_id' => $user->id,
-        ]);
+        $review->likedByUsers()->attach($user->id);
 
         $response = $this->actingAs($user)->post(route('reviews.like', $review));
         $response->assertRedirect();
