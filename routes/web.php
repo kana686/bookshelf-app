@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthenticatedSessionController;
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\LikeController;
 use App\Http\Controllers\RegisteredUserController;
 use App\Http\Controllers\ReviewController;
 use App\Models\Book;
@@ -39,6 +40,8 @@ Route::middleware('auth')->group(function () {
         Route::delete('/reviews/{review}', 'destroy')->name('reviews.destroy');
     });
 
+    Route::post('/reviews/{review}/like', [LikeController::class, 'store'])->name('reviews.like');
+
     Route::post('/books/{book}/favorite', function (Book $book) {
         $user = auth()->user();
         $user->favoriteBooks()->toggle($book->id);
@@ -49,10 +52,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/genres', function () {
         return 'ジャンル一覧画面';
     })->name('genres.index'); // 仮ルート
-
-    Route::post('/reviews/{review}/like', function ($reviewId) {
-        return back();
-    })->name('reviews.like'); // 仮ルート
 
     Route::get('/favorites', function () {
         return 'お気に入り一覧画面';
