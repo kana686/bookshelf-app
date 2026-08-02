@@ -62,10 +62,6 @@ Route::middleware('auth')->group(function () {
         return 'ジャンル一覧画面';
     })->name('genres.index'); // 仮ルート
 
-    Route::post('/books/{book}/reviews', function (Book $book) {
-        return back();
-    })->name('reviews.store'); // 仮ルート
-
     Route::post('/reviews/{review}/like', function ($reviewId) {
         return back();
     })->name('reviews.like'); // 仮ルート
