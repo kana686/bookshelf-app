@@ -5,12 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\BookRequest;
 use App\Models\Book;
 use App\Services\BookService;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class BookController extends Controller
 {
-    use AuthorizesRequests;
-
     protected BookService $bookService;
 
     public function __construct(BookService $bookService)
