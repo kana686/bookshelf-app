@@ -47,7 +47,7 @@ class ReviewLikeFeatureTest extends TestCase
         $response->assertStatus(200);
 
         $response = $this->actingAs($user)->post(route('reviews.like', $review));
-        $response->assertBack();
+        $response->assertRedirect();
 
         $showResponse = $this->actingAs($user)->get(route('books.show', $review->book));
         $showResponse->assertSee('text-blue-500');
