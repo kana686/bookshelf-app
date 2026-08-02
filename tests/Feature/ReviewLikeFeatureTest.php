@@ -33,7 +33,7 @@ class ReviewLikeFeatureTest extends TestCase
             'user_id' => $user->id,
         ]);
 
-        $response->assertBack();
+        $response->assertRedirect();
     }
 
     public function test_いいねを登録するとアイコンの色が変化すること()
@@ -71,7 +71,7 @@ class ReviewLikeFeatureTest extends TestCase
             'user_id' => $user->id,
         ]);
 
-        $response->assertBack();
+        $response->assertRedirect();
     }
 
     public function test_いいねを解除するとアイコンの色が元に戻ること()
@@ -86,7 +86,7 @@ class ReviewLikeFeatureTest extends TestCase
         ]);
 
         $response = $this->actingAs($user)->post(route('reviews.like', $review));
-        $response->assertBack();
+        $response->assertRedirect();
 
         $showResponse = $this->actingAs($user)->get(route('books.show', $review->book));
         $showResponse->assertSee('text-gray-500');
