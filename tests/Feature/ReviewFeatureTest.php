@@ -139,6 +139,9 @@ class ReviewFeatureTest extends TestCase
         $editResponse = $this->actingAs($user)->get(route('reviews.edit', $review));
         $editResponse->assertStatus(200);
 
+        $editResponse->assertSee($review->comment);
+        $editResponse->assertSee($review->rating);
+
         $updateData = [
             'rating' => 5,
             'comment' => '更新後コメント',
