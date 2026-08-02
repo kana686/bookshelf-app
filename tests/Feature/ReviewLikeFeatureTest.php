@@ -22,7 +22,10 @@ class ReviewLikeFeatureTest extends TestCase
     {
         $user = User::first();
 
-        $review = Review::where('user_id', '!=', $user->id)->first();
+        $review = Review::where('user_id', '!=', $user->id)
+            ->whereDoesntHave('likedByUsers', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })->first();
 
         $this->assertNotNull($review, '検証用の他人レビューが存在しません');
 
@@ -36,7 +39,7 @@ class ReviewLikeFeatureTest extends TestCase
         $response->assertRedirect();
     }
 
-    public function test_いいねを登録するとアイコンの色が変化すること()
+    public function test_いいねを登録するとアイコンの色が変化する()
     {
         $user = User::first();
         $review = Review::where('user_id', '!=', $user->id)->first();
@@ -60,6 +63,7 @@ class ReviewLikeFeatureTest extends TestCase
 
         $this->assertNotNull($review, '検証用の他人レビューが存在しません');
 
+        $review->likedByUsers()->detach($user->id);
         $review->likedByUsers()->attach($user->id);
 
         $response = $this->actingAs($user)->post(route('reviews.like', $review));
@@ -72,13 +76,14 @@ class ReviewLikeFeatureTest extends TestCase
         $response->assertRedirect();
     }
 
-    public function test_いいねを解除するとアイコンの色が元に戻ること()
+    public function test_いいねを解除するとアイコンの色が元に戻る()
     {
         $user = User::first();
         $review = Review::where('user_id', '!=', $user->id)->first();
 
         $this->assertNotNull($review, '検証用の他人レビューが存在しません');
 
+        $review->likedByUsers()->detach($user->id);
         $review->likedByUsers()->attach($user->id);
 
         $response = $this->actingAs($user)->post(route('reviews.like', $review));
@@ -86,5 +91,15 @@ class ReviewLikeFeatureTest extends TestCase
 
         $showResponse = $this->actingAs($user)->get(route('books.show', $review->book));
         $showResponse->assertSee('text-gray-500');
+    }
+
+    public function test_未認証状態ではいいねができずにログイン画面にリダイレクトされる()
+    {
+        $review = Review::first();
+        $this->assertNotNull($review, '検証用のレビューが存在しません');
+
+        $response = $this->post(route('reviews.like', $review));
+
+        $response->assertRedirect('/login');
     }
 }
