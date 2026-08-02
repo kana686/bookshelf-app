@@ -58,6 +58,8 @@ class ReviewFeatureTest extends TestCase
 
         $response->assertSessionHasErrors('rating');
         $this->assertDatabaseMissing('reviews', [
+            'book_id' => $book->id,
+            'user_id' => $user->id,
             'comment' => 'コメントのみ入力',
         ]);
     }
@@ -76,6 +78,8 @@ class ReviewFeatureTest extends TestCase
 
         $response->assertSessionHasErrors('rating');
         $this->assertDatabaseMissing('reviews', [
+            'book_id' => $book->id,
+            'user_id' => $user->id,
             'comment' => '不正な評価値テスト',
         ]);
     }
@@ -94,7 +98,9 @@ class ReviewFeatureTest extends TestCase
 
         $response->assertSessionHasErrors('comment');
         $this->assertDatabaseMissing('reviews', [
-            'rating' => 4,
+            'book_id' => $book->id,
+            'user_id' => $user->id,
+            'comment' => '',
         ]);
     }
 
@@ -105,14 +111,16 @@ class ReviewFeatureTest extends TestCase
 
         $reviewData = [
             'rating' => 4,
-            'comment' => str_repeat('あ', 256), // 256文字
+            'comment' => str_repeat('あ', 256),
         ];
 
         $response = $this->actingAs($user)->post(route('reviews.store', $book), $reviewData);
 
         $response->assertSessionHasErrors('comment');
         $this->assertDatabaseMissing('reviews', [
-            'rating' => 4,
+            'book_id' => $book->id,
+            'user_id' => $user->id,
+            'comment' => str_repeat('あ', 256),
         ]);
     }
 
