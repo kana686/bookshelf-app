@@ -11,6 +11,13 @@ class FavoriteController extends Controller
 {
     protected FavoriteService $favoriteService;
 
+    public function index(Request $request, FavoriteService $favoriteService)
+    {
+        $books = $favoriteService->getPaginatedFavorites($request->user());
+
+        return view('favorites.index', compact('books'));
+    }
+
     public function __construct(FavoriteService $favoriteService)
     {
         $this->favoriteService = $favoriteService;

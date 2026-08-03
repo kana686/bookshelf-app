@@ -27,6 +27,8 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/books/{book}/favorites', [FavoriteController::class, 'store'])->name('favorites.toggle');
 
+    Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
+
     Route::controller(BookController::class)->prefix('books')->group(function () {
         Route::get('create', 'create')->name('books.create');
         Route::post('', 'store')->name('books.store');
@@ -47,10 +49,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/genres', function () {
         return 'ジャンル一覧画面';
     })->name('genres.index'); // 仮ルート
-
-    Route::get('/favorites', function () {
-        return 'お気に入り一覧画面';
-    })->name('favorites.index'); // 仮ルート
 });
 
 // 公開
