@@ -2,10 +2,10 @@
 
 use App\Http\Controllers\AuthenticatedSessionController;
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\RegisteredUserController;
 use App\Http\Controllers\ReviewController;
-use App\Models\Book;
 use Illuminate\Support\Facades\Route;
 
 // ゲスト
@@ -25,6 +25,8 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
+    Route::post('/books/{book}/favorites', [FavoriteController::class, 'store'])->name('favorites.toggle');
+
     Route::controller(BookController::class)->prefix('books')->group(function () {
         Route::get('create', 'create')->name('books.create');
         Route::post('', 'store')->name('books.store');
@@ -33,21 +35,14 @@ Route::middleware('auth')->group(function () {
         Route::delete('{book}', 'destroy')->name('books.destroy');
     });
 
+    Route::post('/reviews/{review}/like', [LikeController::class, 'store'])->name('reviews.like');
+
     Route::controller(ReviewController::class)->group(function () {
         Route::post('/books/{book}/reviews', 'store')->name('reviews.store');
         Route::get('/reviews/{review}/edit', 'edit')->name('reviews.edit');
         Route::put('/reviews/{review}', 'update')->name('reviews.update');
         Route::delete('/reviews/{review}', 'destroy')->name('reviews.destroy');
     });
-
-    Route::post('/reviews/{review}/like', [LikeController::class, 'store'])->name('reviews.like');
-
-    Route::post('/books/{book}/favorite', function (Book $book) {
-        $user = auth()->user();
-        $user->favoriteBooks()->toggle($book->id);
-
-        return back();
-    })->name('favorites.toggle'); // 仮ルート
 
     Route::get('/genres', function () {
         return 'ジャンル一覧画面';
