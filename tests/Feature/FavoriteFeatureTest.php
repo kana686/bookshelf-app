@@ -32,7 +32,7 @@ class BookFavoriteFeatureTest extends TestCase
         $books = Book::all();
 
         foreach ($books as $book) {
-            $user->favoriteBooks()->attach($book->id);
+            $user->favoriteBooks()->syncWithoutDetaching([$book->id]);
         }
 
         $response = $this->actingAs($user)->get(route('favorites.index'));
