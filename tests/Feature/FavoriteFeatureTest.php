@@ -38,6 +38,11 @@ class BookFavoriteFeatureTest extends TestCase
         $response = $this->actingAs($user)->get(route('favorites.index'));
 
         $response->assertStatus(200);
+        $response->assertSee($books->first()->title);
+        $response->assertViewHas('books', function ($paginator) {
+            return $paginator->perPage() === 10
+                && $paginator->total() === 11;
+        });
     }
 
     public function test_書籍をお気に入りに登録できる()
