@@ -55,6 +55,14 @@ Route::middleware('auth')->group(function () {
         })->name('genres.create'); // 仮ルート
 
         Route::get('{genre}', 'show')->name('genres.show');
+
+        Route::get('{genre}/edit', function ($genre) {
+            return "ジャンル編集画面（仮: ID {$genre}）";
+        })->name('genres.edit'); // 仮ルート
+
+        Route::delete('{genre}', function ($genre) {
+            return "ジャンル削除処理（仮: ID {$genre}）";
+        })->name('genres.destroy'); // 仮ルート
     });
 });
 
