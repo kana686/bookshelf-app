@@ -49,20 +49,12 @@ Route::middleware('auth')->group(function () {
 
     Route::controller(GenreController::class)->prefix('genres')->group(function () {
         Route::get('', 'index')->name('genres.index');
-
-        Route::get('create', function () {
-            return 'ジャンル登録画面（仮）';
-        })->name('genres.create'); // 仮ルート
-
+        Route::get('create', 'create')->name('genres.create');
+        Route::post('', 'store')->name('genres.store');
         Route::get('{genre}', 'show')->name('genres.show');
-
-        Route::get('{genre}/edit', function ($genre) {
-            return "ジャンル編集画面（仮: ID {$genre}）";
-        })->name('genres.edit'); // 仮ルート
-
-        Route::delete('{genre}', function ($genre) {
-            return "ジャンル削除処理（仮: ID {$genre}）";
-        })->name('genres.destroy'); // 仮ルート
+        Route::get('{genre}/edit', 'edit')->name('genres.edit');
+        Route::put('{genre}', 'update')->name('genres.update');
+        Route::delete('{genre}', 'destroy')->name('genres.destroy');
     });
 });
 
