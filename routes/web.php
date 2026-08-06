@@ -49,6 +49,11 @@ Route::middleware('auth')->group(function () {
 
     Route::controller(GenreController::class)->prefix('genres')->group(function () {
         Route::get('', 'index')->name('genres.index');
+
+        Route::get('create', function () {
+            return 'ジャンル登録画面（仮）';
+        })->name('genres.create'); // 仮ルート
+
         Route::get('{genre}', 'show')->name('genres.show');
     });
 });
