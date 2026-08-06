@@ -1,0 +1,36 @@
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class GenreRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        $genreId = $this->route('genre')?->id ?? $this->route('genre');
+
+        return [
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('genres', 'name')->ignore($genreId),
+            ],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'ジャンル名を入力してください',
+            'name.max' => 'ジャンル名は255文字以内で入力してください',
+            'name.unique' => 'このジャンルは既に登録されています',
+        ];
+    }
+}
