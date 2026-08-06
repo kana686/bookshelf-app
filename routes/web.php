@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthenticatedSessionController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\GenreController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\RegisteredUserController;
 use App\Http\Controllers\ReviewController;
@@ -46,9 +47,23 @@ Route::middleware('auth')->group(function () {
         Route::delete('/reviews/{review}', 'destroy')->name('reviews.destroy');
     });
 
-    Route::get('/genres', function () {
-        return 'ジャンル一覧画面';
-    })->name('genres.index'); // 仮ルート
+    Route::controller(GenreController::class)->prefix('genres')->group(function () {
+        Route::get('', 'index')->name('genres.index');
+
+        Route::get('create', function () {
+            return 'ジャンル登録画面（仮）';
+        })->name('genres.create'); // 仮ルート
+
+        Route::get('{genre}', 'show')->name('genres.show');
+
+        Route::get('{genre}/edit', function ($genre) {
+            return "ジャンル編集画面（仮: ID {$genre}）";
+        })->name('genres.edit'); // 仮ルート
+
+        Route::delete('{genre}', function ($genre) {
+            return "ジャンル削除処理（仮: ID {$genre}）";
+        })->name('genres.destroy'); // 仮ルート
+    });
 });
 
 // 公開
