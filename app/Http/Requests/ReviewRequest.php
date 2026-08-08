@@ -16,6 +16,9 @@ class ReviewRequest extends FormRequest
         return [
             'rating' => ['required', 'integer', 'between:1,5'],
             'comment' => ['required', 'string', 'max:255'],
+            'book_id' => ['required', 'exists:books,id', Rule::unique('reviews')->where(function ($query) {
+                return $query->where('user_id', $this->user()->id);
+            })],
         ];
     }
 
