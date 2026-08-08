@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\GenreRequest;
 use App\Models\Genre;
 use App\Services\GenreService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class GenreController extends Controller
@@ -17,7 +19,7 @@ class GenreController extends Controller
 
     public function index(): View
     {
-        $genres = $this->genreService->getGenresWithBookCount();
+        $genres = $this->genreService->getPaginatedGenresWithBookCount();
 
         return view('genres.index', compact('genres'));
     }
@@ -27,5 +29,40 @@ class GenreController extends Controller
         $books = $this->genreService->getGenreWithBooks($genre);
 
         return view('genres.show', compact('genre', 'books'));
+    }
+
+    public function create(): View
+    {
+        return view('genres.create');
+    }
+
+    public function store(GenreRequest $request): RedirectResponse
+    {
+        $this->genreService->createGenre($request->validated());
+
+        return redirect()->route('genres.index')->with('success', 'ジャンルを追加しました');
+    }
+
+    public function edit(Genre $genre): View
+    {
+        return view('genres.edit', compact('genre'));
+    }
+
+    public function update(GenreRequest $request, Genre $genre): RedirectResponse
+    {
+        $this->genreService->updateGenre($genre, $request->validated());
+
+        return redirect()->route('genres.index')->with('success', 'ジャンルを更新しました');
+    }
+
+    public function destroy(Genre $genre): RedirectResponse
+    {
+        $result = $this->genreService->deleteGenre($genre);
+
+        if (! $result) {
+            return redirect()->route('genres.index')->with('error', '書籍が紐づいているため削除できません');
+        }
+
+        return redirect()->route('genres.index')->with('success', 'ジャンルを削除しました');
     }
 }

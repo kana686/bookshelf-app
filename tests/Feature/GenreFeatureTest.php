@@ -40,6 +40,22 @@ class GenreFeatureTest extends TestCase
         $response->assertSee((string) $bookCount);
     }
 
+    public function test_ジャンル一覧画面でジャンルが10件ページでページネーション表示される()
+    {
+        $user = User::first();
+
+        Genre::factory()->count(2)->create();
+
+        $response = $this->actingAs($user)->get(route('genres.index'));
+
+        $response->assertStatus(200);
+
+        $response->assertViewHas('genres', function ($paginator) {
+            return $paginator->perPage() === 10
+                && $paginator->total() === 12;
+        });
+    }
+
     public function test_未認証の状態でジャンル詳細画面にアクセスした場合ログイン画面にリダイレクトされる()
     {
         $genre = Genre::first() ?? Genre::factory()->create();
@@ -75,5 +91,161 @@ class GenreFeatureTest extends TestCase
             return $paginator->perPage() === 10
                 && $paginator->total() === 12;
         });
+    }
+
+    public function test_未認証の状態でジャンル登録画面にアクセスした場合ログイン画面にリダイレクトされる()
+    {
+        $response = $this->get(route('genres.create'));
+
+        $response->assertStatus(302);
+        $response->assertRedirect('/login');
+    }
+
+    public function test_正常にジャンルを登録できる()
+    {
+        $user = User::first();
+
+        $response = $this->actingAs($user)->post(route('genres.store'), [
+            'name' => '新しいテストジャンル',
+        ]);
+
+        $response->assertRedirect(route('genres.index'));
+        $response->assertSessionHas('success');
+        $this->assertDatabaseHas('genres', [
+            'name' => '新しいテストジャンル',
+        ]);
+    }
+
+    public function test_ジャンル名が未入力の場合バリデーションエラーになる()
+    {
+        $user = User::first();
+
+        $response = $this->actingAs($user)->post(route('genres.store'), [
+            'name' => '',
+        ]);
+
+        $response->assertSessionHasErrors(['name' => 'ジャンル名を入力してください']);
+    }
+
+    public function test_ジャンル名が256文字以上の場合バリデーションエラーになる()
+    {
+        $user = User::first();
+        $longName = str_repeat('あ', 256);
+
+        $response = $this->actingAs($user)->post(route('genres.store'), [
+            'name' => $longName,
+        ]);
+
+        $response->assertSessionHasErrors(['name' => 'ジャンル名は255文字以内で入力してください']);
+    }
+
+    public function test_既に登録されているジャンル名と同じ場合バリデーションエラーになる()
+    {
+        $user = User::first();
+        $existingGenre = Genre::first();
+
+        $response = $this->actingAs($user)->post(route('genres.store'), [
+            'name' => $existingGenre->name,
+        ]);
+
+        $response->assertSessionHasErrors(['name' => 'このジャンル名は既に登録されています']);
+    }
+
+    public function test_未認証の状態でジャンル編集画面にアクセスした場合ログイン画面にリダイレクトされる()
+    {
+        $genre = Genre::first();
+
+        $response = $this->get(route('genres.edit', $genre));
+
+        $response->assertStatus(302);
+        $response->assertRedirect('/login');
+    }
+
+    public function test_ジャンル編集画面でジャンル名を変更して正常に更新できる初期値の検証含む()
+    {
+        $user = User::first();
+        $genre = Genre::first();
+
+        $response = $this->actingAs($user)->get(route('genres.edit', $genre));
+        $response->assertStatus(200);
+        $response->assertSee($genre->name);
+
+        $response = $this->actingAs($user)->put(route('genres.update', $genre), [
+            'name' => '更新後のジャンル名',
+        ]);
+
+        $response->assertRedirect(route('genres.index'));
+        $response->assertSessionHas('success');
+        $this->assertDatabaseHas('genres', [
+            'id' => $genre->id,
+            'name' => '更新後のジャンル名',
+        ]);
+    }
+
+    public function test_ジャンル名が未入力の場合バリデーションエラーになり更新できない()
+    {
+        $user = User::first();
+        $genre = Genre::first();
+
+        $response = $this->actingAs($user)->put(route('genres.update', $genre), [
+            'name' => '',
+        ]);
+
+        $response->assertSessionHasErrors(['name' => 'ジャンル名を入力してください']);
+    }
+
+    public function test_ジャンル名が256文字以上の場合バリデーションエラーになり更新できない()
+    {
+        $user = User::first();
+        $genre = Genre::first();
+        $longName = str_repeat('あ', 256);
+
+        $response = $this->actingAs($user)->put(route('genres.update', $genre), [
+            'name' => $longName,
+        ]);
+
+        $response->assertSessionHasErrors(['name' => 'ジャンル名は255文字以内で入力してください']);
+    }
+
+    public function test_既に登録されている他のジャンル名と同じ場合バリデーションエラーになり更新できない()
+    {
+        $user = User::first();
+        $genres = Genre::take(2)->get();
+        $targetGenre = $genres[0];
+        $otherGenre = $genres[1];
+
+        $response = $this->actingAs($user)->put(route('genres.update', $targetGenre), [
+            'name' => $otherGenre->name,
+        ]);
+
+        $response->assertSessionHasErrors(['name' => 'このジャンル名は既に登録されています']);
+    }
+
+    public function test_書籍が紐づいていないジャンルを正常に削除できる()
+    {
+        $user = User::first();
+        $genre = Genre::factory()->create();
+
+        $response = $this->actingAs($user)->delete(route('genres.destroy', $genre));
+
+        $response->assertRedirect(route('genres.index'));
+        $response->assertSessionHas('success');
+        $this->assertDatabaseMissing('genres', [
+            'id' => $genre->id,
+        ]);
+    }
+
+    public function test_書籍が紐づいているジャンルは削除できない()
+    {
+        $user = User::first();
+        $genre = Genre::has('books')->first();
+
+        $response = $this->actingAs($user)->delete(route('genres.destroy', $genre));
+
+        $response->assertRedirect(route('genres.index'));
+        $response->assertSessionHas('error');
+        $this->assertDatabaseHas('genres', [
+            'id' => $genre->id,
+        ]);
     }
 }
