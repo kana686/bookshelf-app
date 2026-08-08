@@ -40,6 +40,22 @@ class GenreFeatureTest extends TestCase
         $response->assertSee((string) $bookCount);
     }
 
+    public function test_ジャンル一覧画面でジャンルが10件ページでページネーション表示される()
+    {
+        $user = User::first();
+
+        Genre::factory()->count(2)->create();
+
+        $response = $this->actingAs($user)->get(route('genres.index'));
+
+        $response->assertStatus(200);
+
+        $response->assertViewHas('genres', function ($paginator) {
+            return $paginator->perPage() === 10
+                && $paginator->total() === 12;
+        });
+    }
+
     public function test_未認証の状態でジャンル詳細画面にアクセスした場合ログイン画面にリダイレクトされる()
     {
         $genre = Genre::first() ?? Genre::factory()->create();
