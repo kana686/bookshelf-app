@@ -124,6 +124,34 @@ class ReviewFeatureTest extends TestCase
         ]);
     }
 
+    public function test_同じ書籍に対してすでにレビューを投稿している場合バリデーションエラーになる()
+    {
+        $user = User::first();
+        $book = Book::first();
+
+        Review::create([
+            'book_id' => $book->id,
+            'user_id' => $user->id,
+            'rating' => 5,
+            'comment' => '最初のレビュー',
+        ]);
+
+        $reviewData = [
+            'rating' => 4,
+            'comment' => '二回目のレビュー',
+        ];
+
+        $response = $this->actingAs($user)->post(route('reviews.store', $book), $reviewData);
+
+        $response->assertSessionHasErrors('book_id');
+
+        $this->assertDatabaseMissing('reviews', [
+            'book_id' => $book->id,
+            'user_id' => $user->id,
+            'comment' => '二回目のレビュー',
+        ]);
+    }
+
     public function test_自分が投稿したレビューを正常に編集更新できる()
     {
         $user = User::first();
