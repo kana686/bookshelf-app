@@ -31,7 +31,7 @@ class GenreRequest extends FormRequest
         return [
             'name.required' => 'ジャンル名を入力してください',
             'name.max' => 'ジャンル名は255文字以内で入力してください',
-            'name.unique' => 'このジャンルは既に登録されています',
+            'name.unique' => 'このジャンル名は既に登録されています',
         ];
     }
 }
