@@ -11,6 +11,8 @@ class LikeController extends Controller
 {
     public function store(Request $request, Review $review, LikeService $likeService): RedirectResponse
     {
+        $this->authorize('like', $review);
+
         $likeService->toggleLike($review, $request->user());
 
         return back();
