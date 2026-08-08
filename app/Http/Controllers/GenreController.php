@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\GenreRequest;
 use App\Models\Genre;
 use App\Services\GenreService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class GenreController extends Controller
