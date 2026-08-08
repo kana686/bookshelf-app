@@ -17,7 +17,7 @@ class GenreController extends Controller
 
     public function index(): View
     {
-        $genres = $this->genreService->getGenresWithBookCount();
+        $genres = $this->genreService->getPaginatedGenresWithBookCount();
 
         return view('genres.index', compact('genres'));
     }
