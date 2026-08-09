@@ -39,6 +39,31 @@ class ReviewLikeFeatureTest extends TestCase
         $response->assertRedirect();
     }
 
+    public function test_自分自身のレビューにはいいねボタンが表示されない()
+    {
+        $user = User::first();
+
+        $review = Review::where('user_id', $user->id)->first();
+
+        if (! $review) {
+            $book = Book::first();
+            $review = Review::create([
+                'book_id' => $book->id,
+                'user_id' => $user->id,
+                'rating' => 5,
+                'comment' => '自分のテスト用レビュー',
+            ]);
+        }
+
+        $response = $this->actingAs($user)->get(route('books.show', $review->book));
+        $response->assertStatus(200);
+
+        $response->assertSee($review->comment);
+        $response->assertDontSee(route('reviews.like', $review));
+        $likeCount = $review->likedByUsers->count();
+        $response->assertSee("いいね ({$likeCount})");
+    }
+
     public function test_いいねを登録するとアイコンの色が変化する()
     {
         $user = User::first();

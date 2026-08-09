@@ -21,10 +21,8 @@ class ReviewFeatureTest extends TestCase
 
     public function test_必須項目と正しい値を入力して正常にレビューが投稿できる()
     {
-        $user = User::first();
-        $book = Book::first();
-
-        $this->assertNotNull($book, '検証用の書籍データが存在しません');
+        $user = User::factory()->create();
+        $book = Book::factory()->create();
 
         $reviewData = [
             'rating' => 5,
@@ -124,10 +122,38 @@ class ReviewFeatureTest extends TestCase
         ]);
     }
 
+    public function test_同じ書籍に対してすでにレビューを投稿している場合バリデーションエラーになる()
+    {
+        $user = User::factory()->create();
+        $book = Book::factory()->create();
+
+        Review::create([
+            'book_id' => $book->id,
+            'user_id' => $user->id,
+            'rating' => 5,
+            'comment' => '最初のレビュー',
+        ]);
+
+        $reviewData = [
+            'rating' => 4,
+            'comment' => '二回目のレビュー',
+        ];
+
+        $response = $this->actingAs($user)->post(route('reviews.store', $book), $reviewData);
+
+        $response->assertSessionHasErrors('book_id');
+
+        $this->assertDatabaseMissing('reviews', [
+            'book_id' => $book->id,
+            'user_id' => $user->id,
+            'comment' => '二回目のレビュー',
+        ]);
+    }
+
     public function test_自分が投稿したレビューを正常に編集更新できる()
     {
-        $user = User::first();
-        $book = Book::first();
+        $user = User::factory()->create();
+        $book = Book::factory()->create();
 
         $review = Review::create([
             'book_id' => $book->id,
@@ -161,9 +187,9 @@ class ReviewFeatureTest extends TestCase
 
     public function test_他人が投稿したレビューの編集画面にアクセスした場合エラーになる()
     {
-        $user = User::first();
+        $user = User::factory()->create();
         $otherUser = User::where('id', '!=', $user->id)->first();
-        $book = Book::first();
+        $book = Book::factory()->create();
 
         $review = Review::create([
             'book_id' => $book->id,
@@ -179,8 +205,8 @@ class ReviewFeatureTest extends TestCase
 
     public function test_自分が投稿したレビューを正常に削除できる()
     {
-        $user = User::first();
-        $book = Book::first();
+        $user = User::factory()->create();
+        $book = Book::factory()->create();
 
         $review = Review::create([
             'book_id' => $book->id,
@@ -201,9 +227,9 @@ class ReviewFeatureTest extends TestCase
 
     public function test_他人が投稿したレビューを削除しようとした場合エラーになる()
     {
-        $user = User::first();
+        $user = User::factory()->create();
         $otherUser = User::where('id', '!=', $user->id)->first();
-        $book = Book::first();
+        $book = Book::factory()->create();
 
         $review = Review::create([
             'book_id' => $book->id,

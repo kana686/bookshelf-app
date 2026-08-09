@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ReviewRequest extends FormRequest
 {
@@ -11,11 +12,32 @@ class ReviewRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $bookId = $this->route('book')?->id
+            ?? $this->route('book')
+            ?? $this->route('review')?->book_id;
+
+        if ($bookId) {
+            $this->merge([
+                'book_id' => $bookId,
+            ]);
+        }
+    }
+
     public function rules(): array
     {
+        $reviewId = $this->route('review')?->id ?? $this->route('id');
+
         return [
-            'rating' => ['required', 'integer', 'min:1', 'max:5'],
+            'rating' => ['required', 'integer', 'between:1,5'],
             'comment' => ['required', 'string', 'max:255'],
+            'book_id' => [
+                'exists:books,id',
+                Rule::unique('reviews')->where(function ($query) {
+                    return $query->where('user_id', $this->user()->id);
+                })->ignore($reviewId),
+            ],
         ];
     }
 
@@ -23,10 +45,10 @@ class ReviewRequest extends FormRequest
     {
         return [
             'rating.required' => '評価を選択してください',
-            'rating.min' => '評価は1から5の間で指定してください',
-            'rating.max' => '評価は1から5の間で指定してください',
+            'rating.between' => '評価は1から5の間で指定してください',
             'comment.required' => 'コメントを入力してください',
             'comment.max' => 'コメントは255文字以内で入力してください',
+            'book_id.unique' => 'この書籍にはすでにレビューを投稿済みです',
         ];
     }
 }

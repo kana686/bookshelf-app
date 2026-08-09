@@ -21,4 +21,11 @@ class ReviewPolicy
             ? Response::allow()
             : Response::deny('自身の投稿したレビューのみ削除できます');
     }
+
+    public function like(User $user, Review $review): Response
+    {
+        return $user->id !== $review->user_id
+            ? Response::allow()
+            : Response::deny('自分自身のレビューにいいねはできません');
+    }
 }
