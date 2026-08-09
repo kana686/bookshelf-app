@@ -234,7 +234,7 @@ class BookFeatureTest extends TestCase
 
     // 登録時バリデーション
     #[DataProvider('invalidStoreDataProvider')]
-    public function test_登録時バリデーションエラー($field, $invalidValue, $bookDataOverrides)
+    public function test_登録時バリデーションエラー($field, $invalidValue, $bookDataOverrides, $expectedOriginal, $expectedMessage)
     {
         $user = User::first();
         $genre = Genre::first();
@@ -249,7 +249,9 @@ class BookFeatureTest extends TestCase
 
         $response = $this->actingAs($user)->post(route('books.store'), $bookData);
 
-        $response->assertSessionHasErrors($field);
+        $response->assertInvalid([
+            $field => $expectedMessage,
+        ]);
 
         $this->assertDatabaseMissing('books', [
             'author' => 'テスト著者名',
@@ -259,13 +261,13 @@ class BookFeatureTest extends TestCase
     public static function invalidStoreDataProvider()
     {
         return [
-            'タイトル未入力' => ['title', '', ['title' => '']],
-            '著者名未入力' => ['author', '', ['author' => '']],
-            'ISBN未入力' => ['isbn', '', ['isbn' => '']],
-            'ISBN 11桁' => ['isbn', '12345678901', ['isbn' => '12345678901']],
-            'ISBN 14桁' => ['isbn', '12345678901234', ['isbn' => '12345678901234']],
-            '出版日未入力' => ['published_date', '', ['published_date' => '']],
-            'ジャンル未選択' => ['genres', [], ['genres' => []]],
+            'タイトル未入力' => ['title', '', ['title' => ''], ['title' => '元のタイトル'], 'タイトルを入力してください'],
+            '著者名未入力' => ['author', '', ['author' => ''], ['author' => 'テスト著者名'], '著者名を入力してください'],
+            'ISBN未入力' => ['isbn', '', ['isbn' => ''], ['isbn' => '1234567890'], 'ISBNを入力してください'],
+            'ISBN 11桁' => ['isbn', '12345678901', ['isbn' => '12345678901'], ['isbn' => '1234567890'], 'ISBNは10桁または13桁で入力してください'],
+            'ISBN 14桁' => ['isbn', '12345678901234', ['isbn' => '12345678901234'], ['isbn' => '1234567890'], 'ISBNは10桁または13桁で入力してください'],
+            '出版日未入力' => ['published_date', '', ['published_date' => ''], ['published_date' => '2026-06-01'], '出版日を入力してください'],
+            'ジャンル未選択' => ['genres', [], ['genres' => []], ['title' => '元のタイトル'], 'ジャンルを1つ以上選択してください'],
         ];
     }
 
@@ -358,7 +360,7 @@ class BookFeatureTest extends TestCase
 
     // 更新時バリデーションエラー
     #[DataProvider('invalidUpdateDataProvider')]
-    public function test_更新時バリデーションエラー($field, $invalidValue, $bookDataOverrides, $expectedOriginal)
+    public function test_更新時バリデーションエラー($field, $invalidValue, $bookDataOverrides, $expectedOriginal, $expectedMessage)
     {
         $user = User::first();
         $genre = Genre::first();
@@ -385,7 +387,9 @@ class BookFeatureTest extends TestCase
 
         $response = $this->actingAs($user)->put(route('books.update', $book), $bookData);
 
-        $response->assertSessionHasErrors($field);
+        $response->assertInvalid([
+            $field => $expectedMessage,
+        ]);
 
         $this->assertDatabaseHas('books', array_merge([
             'id' => $book->id,
@@ -402,13 +406,13 @@ class BookFeatureTest extends TestCase
     public static function invalidUpdateDataProvider()
     {
         return [
-            'タイトル未入力' => ['title', '', ['title' => ''], ['title' => '元のタイトル']],
-            '著者名未入力' => ['author', '', ['author' => ''], ['author' => 'テスト著者名']],
-            'ISBN未入力' => ['isbn', '', ['isbn' => ''], ['isbn' => '1234567890']],
-            'ISBN 11桁' => ['isbn', '12345678901', ['isbn' => '12345678901'], ['isbn' => '1234567890']],
-            'ISBN 14桁' => ['isbn', '12345678901234', ['isbn' => '12345678901234'], ['isbn' => '1234567890']],
-            '出版日未入力' => ['published_date', '', ['published_date' => ''], ['published_date' => '2026-06-01']],
-            'ジャンル未選択' => ['genres', [], ['genres' => []], ['title' => '元のタイトル']],
+            'タイトル未入力' => ['title', '', ['title' => ''], ['title' => '元のタイトル'], 'タイトルを入力してください'],
+            '著者名未入力' => ['author', '', ['author' => ''], ['author' => 'テスト著者名'], '著者名を入力してください'],
+            'ISBN未入力' => ['isbn', '', ['isbn' => ''], ['isbn' => '1234567890'], 'ISBNを入力してください'],
+            'ISBN 11桁' => ['isbn', '12345678901', ['isbn' => '12345678901'], ['isbn' => '1234567890'], 'ISBNは10桁または13桁で入力してください'],
+            'ISBN 14桁' => ['isbn', '12345678901234', ['isbn' => '12345678901234'], ['isbn' => '1234567890'], 'ISBNは10桁または13桁で入力してください'],
+            '出版日未入力' => ['published_date', '', ['published_date' => ''], ['published_date' => '2026-06-01'], '出版日を入力してください'],
+            'ジャンル未選択' => ['genres', [], ['genres' => []], ['title' => '元のタイトル'], 'ジャンルを1つ以上選択してください'],
         ];
     }
 
