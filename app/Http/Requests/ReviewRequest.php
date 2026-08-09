@@ -16,13 +16,18 @@ class ReviewRequest extends FormRequest
     {
         $reviewId = $this->route('review')?->id ?? $this->route('id');
 
+        $bookId = $this->route('book')?->id
+            ?? $this->route('review')?->book_id
+            ?? $this->input('book_id');
+
         return [
             'rating' => ['required', 'integer', 'between:1,5'],
             'comment' => ['required', 'string', 'max:255'],
             'book_id' => [
                 'exists:books,id',
-                Rule::unique('reviews')->where(function ($query) {
-                    return $query->where('user_id', $this->user()->id);
+                Rule::unique('reviews')->where(function ($query) use ($bookId) {
+                    return $query->where('user_id', $this->user()->id)
+                        ->where('book_id', $bookId);
                 })->ignore($reviewId),
             ],
         ];
