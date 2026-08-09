@@ -470,6 +470,235 @@ class BookFeatureTest extends TestCase
         $response->assertForbidden();
     }
 
+// 更新時バリデーションエラー
+        public function test_タイトルが未入力のまま更新した場合バリデーションメッセージが表示される()
+    {
+        $user = User::first();
+        $genre = Genre::first();
+
+        $book = Book::create([
+            'title' => '元のタイトル',
+            'author' => 'テスト著者名',
+            'isbn' => '1234567890',
+            'published_date' => '2026-06-01',
+            'user_id' => $user->id,
+        ]);
+
+        $bookData = [
+            'title' => '',
+            'author' => 'テスト著者名',
+            'isbn' => '1234567890',
+            'published_date' => '2026-06-01',
+            'genres' => [$genre ? $genre->id : 1],
+        ];
+
+        $response = $this->actingAs($user)->put(route('books.update', $book), $bookData);
+
+        $response->assertSessionHasErrors('title');
+
+        $this->assertDatabaseHas('books', [
+            'id' => $book->id,
+            'title' => '元のタイトル',
+        ]);
+    }
+
+    public function test_著者名が未入力のまま更新した場合バリデーションメッセージが表示される()
+    {
+        $user = User::first();
+        $genre = Genre::first();
+
+        $book = Book::create([
+            'title' => '元のタイトル',
+            'author' => 'テスト著者名',
+            'isbn' => '1234567890',
+            'published_date' => '2026-06-01',
+            'user_id' => $user->id,
+        ]);
+
+        $bookData = [
+            'title' => 'テスト登録書籍',
+            'author' => '',
+            'isbn' => '1234567890',
+            'published_date' => '2026-06-01',
+            'genres' => [$genre ? $genre->id : 1],
+        ];
+
+        $response = $this->actingAs($user)->put(route('books.update', $book), $bookData);
+
+        $response->assertSessionHasErrors('author');
+
+        $this->assertDatabaseHas('books', [
+            'id' => $book->id,
+            'author' => 'テスト著者名',
+        ]);
+    }
+
+    public function test_isb_nが未入力のまま更新した場合バリデーションメッセージが表示される()
+    {
+        $user = User::first();
+        $genre = Genre::first();
+
+        $book = Book::create([
+            'title' => '元のタイトル',
+            'author' => 'テスト著者名',
+            'isbn' => '1234567890',
+            'published_date' => '2026-06-01',
+            'user_id' => $user->id,
+        ]);
+
+        $bookData = [
+            'title' => 'テスト登録書籍',
+            'author' => 'テスト著者名',
+            'isbn' => '',
+            'published_date' => '2026-06-01',
+            'genres' => [$genre ? $genre->id : 1],
+        ];
+
+        $response = $this->actingAs($user)->put(route('books.update', $book), $bookData);
+
+        $response->assertSessionHasErrors('isbn');
+
+        $this->assertDatabaseHas('books', [
+            'id' => $book->id,
+            'isbn' => '1234567890',
+        ]);
+    }
+
+    public function test_isb_nが11桁で更新した場合バリデーションエラーメッセージが表示される()
+    {
+        $user = User::first();
+        $genre = Genre::first();
+
+        $book = Book::create([
+            'title' => '元のタイトル',
+            'author' => 'テスト著者名',
+            'isbn' => '1234567890',
+            'published_date' => '2026-06-01',
+            'user_id' => $user->id,
+        ]);
+
+        $bookData = [
+            'title' => 'テスト登録書籍',
+            'author' => 'テスト著者名',
+            'isbn' => '12345678901',
+            'published_date' => '2026-06-01',
+            'genres' => [$genre ? $genre->id : 1],
+        ];
+
+        $response = $this->actingAs($user)->put(route('books.update', $book), $bookData);
+
+        $response->assertSessionHasErrors('isbn');
+
+        $this->assertDatabaseHas('books', [
+            'id' => $book->id,
+            'isbn' => '1234567890',
+        ]);
+    }
+
+    public function test_isb_nが14桁で更新した場合バリデーションエラーメッセージが表示される()
+    {
+        $user = User::first();
+        $genre = Genre::first();
+
+        $book = Book::create([
+            'title' => '元のタイトル',
+            'author' => 'テスト著者名',
+            'isbn' => '1234567890',
+            'published_date' => '2026-06-01',
+            'user_id' => $user->id,
+        ]);
+
+        $bookData = [
+            'title' => 'テスト登録書籍',
+            'author' => 'テスト著者名',
+            'isbn' => '12345678901234',
+            'published_date' => '2026-06-01',
+            'genres' => [$genre ? $genre->id : 1],
+        ];
+
+        $response = $this->actingAs($user)->put(route('books.update', $book), $bookData);
+
+        $response->assertSessionHasErrors('isbn');
+
+        $this->assertDatabaseHas('books', [
+            'id' => $book->id,
+            'isbn' => '1234567890',
+        ]);
+    }
+
+    public function test_出版日が未入力のまま更新した場合バリデーションメッセージが表示される()
+    {
+        $user = User::first();
+        $genre = Genre::first();
+
+        $book = Book::create([
+            'title' => '元のタイトル',
+            'author' => 'テスト著者名',
+            'isbn' => '1234567890',
+            'published_date' => '2026-06-01',
+            'user_id' => $user->id,
+        ]);
+
+        $bookData = [
+            'title' => 'テスト登録書籍',
+            'author' => 'テスト著者名',
+            'isbn' => '1234567890',
+            'published_date' => '',
+            'genres' => [$genre ? $genre->id : 1],
+        ];
+
+        $response = $this->actingAs($user)->put(route('books.update', $book), $bookData);
+
+        $response->assertSessionHasErrors('published_date');
+
+        $this->assertDatabaseHas('books', [
+            'id' => $book->id,
+            'published_date' => '2026-06-01',
+        ]);
+    }
+
+    public function test_ジャンル未選択のまま更新した場合バリデーションメッセージが表示される()
+    {
+        $user = User::first();
+        $genre = Genre::first();
+
+        $book = Book::create([
+            'title' => '元のタイトル',
+            'author' => 'テスト著者名',
+            'isbn' => '1234567890',
+            'published_date' => '2026-06-01',
+            'user_id' => $user->id,
+        ]);
+
+        if ($genre) {
+            $book->genres()->attach($genre->id);
+        }
+
+        $bookData = [
+            'title' => 'テスト登録書籍',
+            'author' => 'テスト著者名',
+            'isbn' => '1234567890',
+            'published_date' => '2026-06-01',
+            'genres' => [],
+        ];
+
+        $response = $this->actingAs($user)->put(route('books.update', $book), $bookData);
+
+        $response->assertSessionHasErrors('genres');
+
+        $this->assertDatabaseHas('books', [
+            'id' => $book->id,
+            'title' => '元のタイトル',
+        ]);
+
+        if ($genre) {
+            $this->assertDatabaseHas('book_genre', [
+                'book_id' => $book->id,
+                'genre_id' => $genre->id,
+            ]);
+        }
+    }
+
     public function test_自分が登録した書籍を正常に削除できる()
     {
         $user = User::first();
