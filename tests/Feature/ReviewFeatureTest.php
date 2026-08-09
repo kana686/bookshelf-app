@@ -21,10 +21,8 @@ class ReviewFeatureTest extends TestCase
 
     public function test_必須項目と正しい値を入力して正常にレビューが投稿できる()
     {
-        $user = User::first();
-        $book = Book::first();
-
-        $this->assertNotNull($book, '検証用の書籍データが存在しません');
+        $user = User::factory()->create();
+        $book = Book::factory()->create();
 
         $reviewData = [
             'rating' => 5,
@@ -154,8 +152,8 @@ class ReviewFeatureTest extends TestCase
 
     public function test_自分が投稿したレビューを正常に編集更新できる()
     {
-        $user = User::first();
-        $book = Book::first();
+        $user = User::factory()->create();
+        $book = Book::factory()->create();
 
         $review = Review::create([
             'book_id' => $book->id,
@@ -207,8 +205,8 @@ class ReviewFeatureTest extends TestCase
 
     public function test_自分が投稿したレビューを正常に削除できる()
     {
-        $user = User::first();
-        $book = Book::first();
+        $user = User::factory()->create();
+        $book = Book::factory()->create();
 
         $review = Review::create([
             'book_id' => $book->id,
