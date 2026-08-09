@@ -124,8 +124,8 @@ class ReviewFeatureTest extends TestCase
 
     public function test_同じ書籍に対してすでにレビューを投稿している場合バリデーションエラーになる()
     {
-        $user = User::first();
-        $book = Book::first();
+        $user = User::factory()->create();
+        $book = Book::factory()->create();
 
         Review::create([
             'book_id' => $book->id,
@@ -187,9 +187,9 @@ class ReviewFeatureTest extends TestCase
 
     public function test_他人が投稿したレビューの編集画面にアクセスした場合エラーになる()
     {
-        $user = User::first();
+        $user = User::factory()->create();
         $otherUser = User::where('id', '!=', $user->id)->first();
-        $book = Book::first();
+        $book = Book::factory()->create();
 
         $review = Review::create([
             'book_id' => $book->id,
@@ -227,9 +227,9 @@ class ReviewFeatureTest extends TestCase
 
     public function test_他人が投稿したレビューを削除しようとした場合エラーになる()
     {
-        $user = User::first();
+        $user = User::factory()->create();
         $otherUser = User::where('id', '!=', $user->id)->first();
-        $book = Book::first();
+        $book = Book::factory()->create();
 
         $review = Review::create([
             'book_id' => $book->id,
