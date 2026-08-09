@@ -108,7 +108,7 @@ class BookFeatureTest extends TestCase
         }
     }
 
-    public function test_ログインユーザーがルート_ur_lにアクセスし10件表示されること()
+    public function test_ログインユーザーがルートurlにアクセスし10件表示されること()
     {
         $user = User::first();
         $response = $this->actingAs($user)->get('/');
