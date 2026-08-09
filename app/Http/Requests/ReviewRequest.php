@@ -12,22 +12,30 @@ class ReviewRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $bookId = $this->route('book')?->id
+            ?? $this->route('book')
+            ?? $this->route('review')?->book_id;
+
+        if ($bookId) {
+            $this->merge([
+                'book_id' => $bookId,
+            ]);
+        }
+    }
+
     public function rules(): array
     {
         $reviewId = $this->route('review')?->id ?? $this->route('id');
-
-        $bookId = $this->route('book')?->id
-            ?? $this->route('review')?->book_id
-            ?? $this->input('book_id');
 
         return [
             'rating' => ['required', 'integer', 'between:1,5'],
             'comment' => ['required', 'string', 'max:255'],
             'book_id' => [
                 'exists:books,id',
-                Rule::unique('reviews')->where(function ($query) use ($bookId) {
-                    return $query->where('user_id', $this->user()->id)
-                        ->where('book_id', $bookId);
+                Rule::unique('reviews')->where(function ($query) {
+                    return $query->where('user_id', $this->user()->id);
                 })->ignore($reviewId),
             ],
         ];
