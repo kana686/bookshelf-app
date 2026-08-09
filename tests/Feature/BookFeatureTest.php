@@ -193,6 +193,15 @@ class BookFeatureTest extends TestCase
         $response->assertSee('書籍登録');
     }
 
+    public function test_未認証の状態で、書籍登録画面にアクセスした場合、ログイン画面にリダイレクトされる()
+    {
+        $response = $this->get(route('books.create'));
+
+        $response->assertStatus(302);
+        $response->assertRedirect('/login');
+
+    }
+
     public function test_必須項目を全て入力して正常に書籍登録ができる()
     {
         $user = User::first();
