@@ -7,6 +7,7 @@ use App\Models\Genre;
 use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class BookFeatureTest extends TestCase
@@ -231,159 +232,44 @@ class BookFeatureTest extends TestCase
         $response->assertSessionHas('success', '書籍を登録しました');
     }
 
-    public function test_タイトルが未入力の場合バリデーションメッセージが表示される()
+    // 登録時バリデーション
+    #[DataProvider('invalidStoreDataProvider')]
+    public function test_登録時バリデーションエラー($field, $invalidValue, $bookDataOverrides)
     {
         $user = User::first();
         $genre = Genre::first();
 
-        $bookData = [
-            'title' => '',
+        $bookData = array_merge([
+            'title' => 'テスト登録書籍',
             'author' => 'テスト著者名',
             'isbn' => '1234567890',
             'published_date' => '2026-06-01',
             'genres' => [$genre ? $genre->id : 1],
-        ];
+        ], $bookDataOverrides);
 
         $response = $this->actingAs($user)->post(route('books.store'), $bookData);
 
-        $response->assertSessionHasErrors('title');
+        $response->assertSessionHasErrors($field);
 
         $this->assertDatabaseMissing('books', [
             'author' => 'テスト著者名',
         ]);
     }
 
-    public function test_著者名が未入力の場合バリデーションメッセージが表示される()
+    public static function invalidStoreDataProvider()
     {
-        $user = User::first();
-        $genre = Genre::first();
-
-        $bookData = [
-            'title' => 'テスト登録書籍',
-            'author' => '',
-            'isbn' => '1234567890',
-            'published_date' => '2026-06-01',
-            'genres' => [$genre ? $genre->id : 1],
+        return [
+            'タイトル未入力' => ['title', '', ['title' => '']],
+            '著者名未入力' => ['author', '', ['author' => '']],
+            'ISBN未入力' => ['isbn', '', ['isbn' => '']],
+            'ISBN 11桁' => ['isbn', '12345678901', ['isbn' => '12345678901']],
+            'ISBN 14桁' => ['isbn', '12345678901234', ['isbn' => '12345678901234']],
+            '出版日未入力' => ['published_date', '', ['published_date' => '']],
+            'ジャンル未選択' => ['genres', [], ['genres' => []]],
         ];
-
-        $response = $this->actingAs($user)->post(route('books.store'), $bookData);
-
-        $response->assertSessionHasErrors('author');
-
-        $this->assertDatabaseMissing('books', [
-            'title' => 'テスト登録書籍',
-        ]);
     }
 
-    public function test_isb_nが未入力の場合バリデーションメッセージが表示される()
-    {
-        $user = User::first();
-        $genre = Genre::first();
-
-        $bookData = [
-            'title' => 'テスト登録書籍',
-            'author' => 'テスト著者名',
-            'isbn' => '',
-            'published_date' => '2026-06-01',
-            'genres' => [$genre ? $genre->id : 1],
-        ];
-
-        $response = $this->actingAs($user)->post(route('books.store'), $bookData);
-
-        $response->assertSessionHasErrors('isbn');
-
-        $this->assertDatabaseMissing('books', [
-            'title' => 'テスト登録書籍',
-        ]);
-    }
-
-    public function test_isb_nが11桁の場合バリデーションエラーメッセージが表示される()
-    {
-        $user = User::first();
-        $genre = Genre::first();
-
-        $bookData = [
-            'title' => 'テスト登録書籍',
-            'author' => 'テスト著者名',
-            'isbn' => '12345678901',
-            'published_date' => '2026-06-01',
-            'genres' => [$genre ? $genre->id : 1],
-        ];
-
-        $response = $this->actingAs($user)->post(route('books.store'), $bookData);
-
-        $response->assertSessionHasErrors('isbn');
-
-        $this->assertDatabaseMissing('books', [
-            'title' => 'テスト登録書籍',
-        ]);
-    }
-
-    public function test_isb_nが14桁の場合バリデーションエラーメッセージが表示される()
-    {
-        $user = User::first();
-        $genre = Genre::first();
-
-        $bookData = [
-            'title' => 'テスト登録書籍',
-            'author' => 'テスト著者名',
-            'isbn' => '12345678901234',
-            'published_date' => '2026-06-01',
-            'genres' => [$genre ? $genre->id : 1],
-        ];
-
-        $response = $this->actingAs($user)->post(route('books.store'), $bookData);
-
-        $response->assertSessionHasErrors('isbn');
-
-        $this->assertDatabaseMissing('books', [
-            'title' => 'テスト登録書籍',
-        ]);
-    }
-
-    public function test_出版日が未入力の場合バリデーションメッセージが表示される()
-    {
-        $user = User::first();
-        $genre = Genre::first();
-
-        $bookData = [
-            'title' => 'テスト登録書籍',
-            'author' => 'テスト著者名',
-            'isbn' => '1234567890',
-            'published_date' => '',
-            'genres' => [$genre ? $genre->id : 1],
-        ];
-
-        $response = $this->actingAs($user)->post(route('books.store'), $bookData);
-
-        $response->assertSessionHasErrors('published_date');
-
-        $this->assertDatabaseMissing('books', [
-            'title' => 'テスト登録書籍',
-        ]);
-    }
-
-    public function test_ジャンル未選択の場合バリデーションメッセージが表示される()
-    {
-        $user = User::first();
-
-        $bookData = [
-            'title' => 'テスト登録書籍',
-            'author' => 'テスト著者名',
-            'isbn' => '1234567890',
-            'published_date' => '2026-06-01',
-            'genres' => [],
-        ];
-
-        $response = $this->actingAs($user)->post(route('books.store'), $bookData);
-
-        $response->assertSessionHasErrors('genres');
-
-        $this->assertDatabaseMissing('books', [
-            'title' => 'テスト登録書籍',
-        ]);
-    }
-
+    // 編集画面
     public function test_自分が登録した書籍の編集画面が正しく表示される()
     {
         $user = User::first();
@@ -470,194 +356,9 @@ class BookFeatureTest extends TestCase
         $response->assertForbidden();
     }
 
-// 更新時バリデーションエラー
-        public function test_タイトルが未入力のまま更新した場合バリデーションメッセージが表示される()
-    {
-        $user = User::first();
-        $genre = Genre::first();
-
-        $book = Book::create([
-            'title' => '元のタイトル',
-            'author' => 'テスト著者名',
-            'isbn' => '1234567890',
-            'published_date' => '2026-06-01',
-            'user_id' => $user->id,
-        ]);
-
-        $bookData = [
-            'title' => '',
-            'author' => 'テスト著者名',
-            'isbn' => '1234567890',
-            'published_date' => '2026-06-01',
-            'genres' => [$genre ? $genre->id : 1],
-        ];
-
-        $response = $this->actingAs($user)->put(route('books.update', $book), $bookData);
-
-        $response->assertSessionHasErrors('title');
-
-        $this->assertDatabaseHas('books', [
-            'id' => $book->id,
-            'title' => '元のタイトル',
-        ]);
-    }
-
-    public function test_著者名が未入力のまま更新した場合バリデーションメッセージが表示される()
-    {
-        $user = User::first();
-        $genre = Genre::first();
-
-        $book = Book::create([
-            'title' => '元のタイトル',
-            'author' => 'テスト著者名',
-            'isbn' => '1234567890',
-            'published_date' => '2026-06-01',
-            'user_id' => $user->id,
-        ]);
-
-        $bookData = [
-            'title' => 'テスト登録書籍',
-            'author' => '',
-            'isbn' => '1234567890',
-            'published_date' => '2026-06-01',
-            'genres' => [$genre ? $genre->id : 1],
-        ];
-
-        $response = $this->actingAs($user)->put(route('books.update', $book), $bookData);
-
-        $response->assertSessionHasErrors('author');
-
-        $this->assertDatabaseHas('books', [
-            'id' => $book->id,
-            'author' => 'テスト著者名',
-        ]);
-    }
-
-    public function test_isb_nが未入力のまま更新した場合バリデーションメッセージが表示される()
-    {
-        $user = User::first();
-        $genre = Genre::first();
-
-        $book = Book::create([
-            'title' => '元のタイトル',
-            'author' => 'テスト著者名',
-            'isbn' => '1234567890',
-            'published_date' => '2026-06-01',
-            'user_id' => $user->id,
-        ]);
-
-        $bookData = [
-            'title' => 'テスト登録書籍',
-            'author' => 'テスト著者名',
-            'isbn' => '',
-            'published_date' => '2026-06-01',
-            'genres' => [$genre ? $genre->id : 1],
-        ];
-
-        $response = $this->actingAs($user)->put(route('books.update', $book), $bookData);
-
-        $response->assertSessionHasErrors('isbn');
-
-        $this->assertDatabaseHas('books', [
-            'id' => $book->id,
-            'isbn' => '1234567890',
-        ]);
-    }
-
-    public function test_isb_nが11桁で更新した場合バリデーションエラーメッセージが表示される()
-    {
-        $user = User::first();
-        $genre = Genre::first();
-
-        $book = Book::create([
-            'title' => '元のタイトル',
-            'author' => 'テスト著者名',
-            'isbn' => '1234567890',
-            'published_date' => '2026-06-01',
-            'user_id' => $user->id,
-        ]);
-
-        $bookData = [
-            'title' => 'テスト登録書籍',
-            'author' => 'テスト著者名',
-            'isbn' => '12345678901',
-            'published_date' => '2026-06-01',
-            'genres' => [$genre ? $genre->id : 1],
-        ];
-
-        $response = $this->actingAs($user)->put(route('books.update', $book), $bookData);
-
-        $response->assertSessionHasErrors('isbn');
-
-        $this->assertDatabaseHas('books', [
-            'id' => $book->id,
-            'isbn' => '1234567890',
-        ]);
-    }
-
-    public function test_isb_nが14桁で更新した場合バリデーションエラーメッセージが表示される()
-    {
-        $user = User::first();
-        $genre = Genre::first();
-
-        $book = Book::create([
-            'title' => '元のタイトル',
-            'author' => 'テスト著者名',
-            'isbn' => '1234567890',
-            'published_date' => '2026-06-01',
-            'user_id' => $user->id,
-        ]);
-
-        $bookData = [
-            'title' => 'テスト登録書籍',
-            'author' => 'テスト著者名',
-            'isbn' => '12345678901234',
-            'published_date' => '2026-06-01',
-            'genres' => [$genre ? $genre->id : 1],
-        ];
-
-        $response = $this->actingAs($user)->put(route('books.update', $book), $bookData);
-
-        $response->assertSessionHasErrors('isbn');
-
-        $this->assertDatabaseHas('books', [
-            'id' => $book->id,
-            'isbn' => '1234567890',
-        ]);
-    }
-
-    public function test_出版日が未入力のまま更新した場合バリデーションメッセージが表示される()
-    {
-        $user = User::first();
-        $genre = Genre::first();
-
-        $book = Book::create([
-            'title' => '元のタイトル',
-            'author' => 'テスト著者名',
-            'isbn' => '1234567890',
-            'published_date' => '2026-06-01',
-            'user_id' => $user->id,
-        ]);
-
-        $bookData = [
-            'title' => 'テスト登録書籍',
-            'author' => 'テスト著者名',
-            'isbn' => '1234567890',
-            'published_date' => '',
-            'genres' => [$genre ? $genre->id : 1],
-        ];
-
-        $response = $this->actingAs($user)->put(route('books.update', $book), $bookData);
-
-        $response->assertSessionHasErrors('published_date');
-
-        $this->assertDatabaseHas('books', [
-            'id' => $book->id,
-            'published_date' => '2026-06-01',
-        ]);
-    }
-
-    public function test_ジャンル未選択のまま更新した場合バリデーションメッセージが表示される()
+    // 更新時バリデーションエラー
+    #[DataProvider('invalidUpdateDataProvider')]
+    public function test_更新時バリデーションエラー($field, $invalidValue, $bookDataOverrides, $expectedOriginal)
     {
         $user = User::first();
         $genre = Genre::first();
@@ -674,22 +375,21 @@ class BookFeatureTest extends TestCase
             $book->genres()->attach($genre->id);
         }
 
-        $bookData = [
+        $bookData = array_merge([
             'title' => 'テスト登録書籍',
             'author' => 'テスト著者名',
             'isbn' => '1234567890',
             'published_date' => '2026-06-01',
-            'genres' => [],
-        ];
+            'genres' => [$genre ? $genre->id : 1],
+        ], $bookDataOverrides);
 
         $response = $this->actingAs($user)->put(route('books.update', $book), $bookData);
 
-        $response->assertSessionHasErrors('genres');
+        $response->assertSessionHasErrors($field);
 
-        $this->assertDatabaseHas('books', [
+        $this->assertDatabaseHas('books', array_merge([
             'id' => $book->id,
-            'title' => '元のタイトル',
-        ]);
+        ], $expectedOriginal));
 
         if ($genre) {
             $this->assertDatabaseHas('book_genre', [
@@ -699,6 +399,20 @@ class BookFeatureTest extends TestCase
         }
     }
 
+    public static function invalidUpdateDataProvider()
+    {
+        return [
+            'タイトル未入力' => ['title', '', ['title' => ''], ['title' => '元のタイトル']],
+            '著者名未入力' => ['author', '', ['author' => ''], ['author' => 'テスト著者名']],
+            'ISBN未入力' => ['isbn', '', ['isbn' => ''], ['isbn' => '1234567890']],
+            'ISBN 11桁' => ['isbn', '12345678901', ['isbn' => '12345678901'], ['isbn' => '1234567890']],
+            'ISBN 14桁' => ['isbn', '12345678901234', ['isbn' => '12345678901234'], ['isbn' => '1234567890']],
+            '出版日未入力' => ['published_date', '', ['published_date' => ''], ['published_date' => '2026-06-01']],
+            'ジャンル未選択' => ['genres', [], ['genres' => []], ['title' => '元のタイトル']],
+        ];
+    }
+
+    // 削除
     public function test_自分が登録した書籍を正常に削除できる()
     {
         $user = User::first();
