@@ -45,7 +45,7 @@ class ReviewRequest extends FormRequest
     {
         return [
             'rating.required' => '評価を選択してください',
-            'rating.between' => '評価は1から5の間で指定してください',
+            'rating.between' => '評価は1から5の間で選択してください',
             'comment.required' => 'コメントを入力してください',
             'comment.max' => 'コメントは255文字以内で入力してください',
             'book_id.unique' => 'この書籍にはすでにレビューを投稿済みです',

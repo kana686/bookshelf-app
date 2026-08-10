@@ -7,6 +7,7 @@ use App\Models\Review;
 use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class ReviewFeatureTest extends TestCase
@@ -42,84 +43,55 @@ class ReviewFeatureTest extends TestCase
         $response->assertSessionHas('success', 'レビューを投稿しました');
     }
 
-    public function test_評価が未入力の場合バリデーションエラーになる()
+    // 登録時バリデーションエラー
+    #[DataProvider('invalidReviewStoreDataProvider')]
+    public function test_レビュー登録時バリデーションエラー($field, $reviewDataOverrides, $expectedMessage)
     {
-        $user = User::first();
-        $book = Book::first();
+        $user = User::factory()->create();
+        $book = Book::factory()->create();
 
-        $reviewData = [
-            'rating' => '',
-            'comment' => 'コメントのみ入力',
-        ];
-
-        $response = $this->actingAs($user)->post(route('reviews.store', $book), $reviewData);
-
-        $response->assertSessionHasErrors('rating');
-        $this->assertDatabaseMissing('reviews', [
-            'book_id' => $book->id,
-            'user_id' => $user->id,
-            'comment' => 'コメントのみ入力',
-        ]);
-    }
-
-    public function test_評価に1から5以外の数値を入れた場合バリデーションエラーになる()
-    {
-        $user = User::first();
-        $book = Book::first();
-
-        $reviewData = [
-            'rating' => 6,
-            'comment' => '不正な評価値テスト',
-        ];
-
-        $response = $this->actingAs($user)->post(route('reviews.store', $book), $reviewData);
-
-        $response->assertSessionHasErrors('rating');
-        $this->assertDatabaseMissing('reviews', [
-            'book_id' => $book->id,
-            'user_id' => $user->id,
-            'comment' => '不正な評価値テスト',
-        ]);
-    }
-
-    public function test_コメントが未入力の場合バリデーションエラーになる()
-    {
-        $user = User::first();
-        $book = Book::first();
-
-        $reviewData = [
+        $reviewData = array_merge([
             'rating' => 4,
-            'comment' => '',
-        ];
+            'comment' => 'テスト用コメント',
+        ], $reviewDataOverrides);
 
         $response = $this->actingAs($user)->post(route('reviews.store', $book), $reviewData);
 
-        $response->assertSessionHasErrors('comment');
+        $response->assertInvalid([
+            $field => $expectedMessage,
+        ]);
+
         $this->assertDatabaseMissing('reviews', [
             'book_id' => $book->id,
             'user_id' => $user->id,
-            'comment' => '',
+            'comment' => $reviewDataOverrides['comment'] ?? 'テスト用コメント',
         ]);
     }
 
-    public function test_コメントが256文字以上の場合バリデーションエラーメッセージが表示される()
+    public static function invalidReviewStoreDataProvider()
     {
-        $user = User::first();
-        $book = Book::first();
-
-        $reviewData = [
-            'rating' => 4,
-            'comment' => str_repeat('あ', 256),
+        return [
+            '評価未入力' => [
+                'rating',
+                ['rating' => ''],
+                '評価を選択してください',
+            ],
+            '評価が6（範囲外）' => [
+                'rating',
+                ['rating' => 6],
+                '評価は1から5の間で選択してください',
+            ],
+            'コメント未入力' => [
+                'comment',
+                ['comment' => ''],
+                'コメントを入力してください',
+            ],
+            'コメントが256文字以上' => [
+                'comment',
+                ['comment' => str_repeat('あ', 256)],
+                'コメントは255文字以内で入力してください',
+            ],
         ];
-
-        $response = $this->actingAs($user)->post(route('reviews.store', $book), $reviewData);
-
-        $response->assertSessionHasErrors('comment');
-        $this->assertDatabaseMissing('reviews', [
-            'book_id' => $book->id,
-            'user_id' => $user->id,
-            'comment' => str_repeat('あ', 256),
-        ]);
     }
 
     public function test_同じ書籍に対してすでにレビューを投稿している場合バリデーションエラーになる()
@@ -150,6 +122,7 @@ class ReviewFeatureTest extends TestCase
         ]);
     }
 
+    // 編集
     public function test_自分が投稿したレビューを正常に編集更新できる()
     {
         $user = User::factory()->create();
@@ -203,6 +176,65 @@ class ReviewFeatureTest extends TestCase
         $response->assertForbidden();
     }
 
+    // 編集時バリデーションエラー
+    #[DataProvider('invalidReviewUpdateDataProvider')]
+    public function test_レビュー編集時バリデーションエラー($field, $reviewDataOverrides, $expectedMessage)
+    {
+        $user = User::factory()->create();
+        $book = Book::factory()->create();
+
+        $review = Review::create([
+            'book_id' => $book->id,
+            'user_id' => $user->id,
+            'rating' => 4,
+            'comment' => '元のコメント',
+        ]);
+
+        $reviewData = array_merge([
+            'rating' => 5,
+            'comment' => '更新後のテストコメント',
+        ], $reviewDataOverrides);
+
+        $response = $this->actingAs($user)->put(route('reviews.update', $review), $reviewData);
+
+        $response->assertInvalid([
+            $field => $expectedMessage,
+        ]);
+
+        $this->assertDatabaseHas('reviews', [
+            'id' => $review->id,
+            'rating' => 4,
+            'comment' => '元のコメント',
+        ]);
+    }
+
+    public static function invalidReviewUpdateDataProvider()
+    {
+        return [
+            '評価未入力' => [
+                'rating',
+                ['rating' => ''],
+                '評価を選択してください',
+            ],
+            '評価が6（範囲外）' => [
+                'rating',
+                ['rating' => 6],
+                '評価は1から5の間で選択してください',
+            ],
+            'コメント未入力' => [
+                'comment',
+                ['comment' => ''],
+                'コメントを入力してください',
+            ],
+            'コメントが256文字以上' => [
+                'comment',
+                ['comment' => str_repeat('あ', 256)],
+                'コメントは255文字以内で入力してください',
+            ],
+        ];
+    }
+
+    // 削除
     public function test_自分が投稿したレビューを正常に削除できる()
     {
         $user = User::factory()->create();
