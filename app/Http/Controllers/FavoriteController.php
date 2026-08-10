@@ -12,16 +12,16 @@ class FavoriteController extends Controller
 {
     protected FavoriteService $favoriteService;
 
-    public function index(Request $request, FavoriteService $favoriteService): View
-    {
-        $books = $favoriteService->getPaginatedFavorites($request->user());
-
-        return view('favorites.index', compact('books'));
-    }
-
     public function __construct(FavoriteService $favoriteService)
     {
         $this->favoriteService = $favoriteService;
+    }
+
+    public function index(Request $request): View
+    {
+        $books = $this->favoriteService->getPaginatedFavorites($request->user());
+
+        return view('favorites.index', compact('books'));
     }
 
     public function store(Request $request, Book $book): RedirectResponse
