@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\BookRequest;
 use App\Models\Book;
 use App\Services\BookService;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class BookController extends Controller
 {
@@ -15,28 +17,28 @@ class BookController extends Controller
         $this->bookService = $bookService;
     }
 
-    public function index()
+    public function index(): View
     {
         $books = $this->bookService->getPaginatedBooks();
 
         return view('books.index', compact('books'));
     }
 
-    public function show(Book $book)
+    public function show(Book $book): View
     {
         $book = $this->bookService->getBookById($book->id);
 
         return view('books.show', compact('book'));
     }
 
-    public function create()
+    public function create(): View
     {
         $genres = $this->bookService->getAllGenres();
 
         return view('books.create', compact('genres'));
     }
 
-    public function store(BookRequest $request)
+    public function store(BookRequest $request): RedirectResponse
     {
         $book = $this->bookService->createBook($request->validated());
 
@@ -44,7 +46,7 @@ class BookController extends Controller
             ->with('success', '書籍を登録しました');
     }
 
-    public function edit(Book $book)
+    public function edit(Book $book): View
     {
         $this->authorize('update', $book);
 
@@ -54,7 +56,7 @@ class BookController extends Controller
         return view('books.edit', compact('book', 'genres'));
     }
 
-    public function update(BookRequest $request, Book $book)
+    public function update(BookRequest $request, Book $book): RedirectResponse
     {
         $this->authorize('update', $book);
 
@@ -64,7 +66,7 @@ class BookController extends Controller
             ->with('success', '書籍情報を更新しました');
     }
 
-    public function destroy(Book $book)
+    public function destroy(Book $book): RedirectResponse
     {
         $this->authorize('delete', $book);
 
