@@ -4,21 +4,23 @@ namespace App\Services;
 
 use App\Models\Book;
 use App\Models\Genre;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 
 class BookService
 {
-    public function getPaginatedBooks(int $perPage = 10)
+    public function getPaginatedBooks(int $perPage = 10): LengthAwarePaginator
     {
         return Book::with('genres')->latest()->paginate($perPage);
     }
 
-    public function getBookById(int $id)
+    public function getBookById(int $id): Book
     {
         return Book::with(['genres', 'reviews.user', 'usersWhoFavorited'])->findOrFail($id);
     }
 
-    public function getAllGenres()
+    public function getAllGenres(): Collection
     {
         return Genre::all();
     }
