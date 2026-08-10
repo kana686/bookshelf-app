@@ -9,11 +9,18 @@ use Illuminate\Http\Request;
 
 class LikeController extends Controller
 {
-    public function store(Request $request, Review $review, LikeService $likeService): RedirectResponse
+    protected LikeService $likeService;
+
+    public function __construct(LikeService $likeService)
+    {
+        $this->likeService = $likeService;
+    }
+
+    public function store(Request $request, Review $review): RedirectResponse
     {
         $this->authorize('like', $review);
 
-        $likeService->toggleLike($review, $request->user());
+        $this->likeService->toggleLike($review, $request->user());
 
         return back();
     }
