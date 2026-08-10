@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Facades\Auth;
@@ -14,12 +16,12 @@ use Laravel\Fortify\Contracts\LoginResponse;
 
 class AuthenticatedSessionController extends Controller
 {
-    public function create()
+    public function create(): View
     {
         return view('auth.login');
     }
 
-    public function store(LoginRequest $request)
+    public function store(LoginRequest $request): LoginResponse
     {
         app(Pipeline::class)->send($request)->through([
             EnsureLoginIsNotThrottled::class,
@@ -31,7 +33,7 @@ class AuthenticatedSessionController extends Controller
         return app(LoginResponse::class);
     }
 
-    public function destroy(Request $request)
+    public function destroy(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();
 
