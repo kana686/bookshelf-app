@@ -5,6 +5,7 @@ use App\Http\Controllers\BookController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\GenreController;
 use App\Http\Controllers\LikeController;
+use App\Http\Controllers\RankingController;
 use App\Http\Controllers\RegisteredUserController;
 use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\Route;
@@ -65,6 +66,4 @@ Route::controller(BookController::class)->group(function () {
     Route::get('/books/{book}', 'show')->name('books.show');
 });
 
-Route::get('/ranking', function () {
-    return 'ランキング画面';
-})->name('ranking.index');
+Route::get('/ranking', [RankingController::class, 'index'])->name('ranking.index');
