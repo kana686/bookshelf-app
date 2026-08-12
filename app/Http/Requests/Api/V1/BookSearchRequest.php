@@ -41,7 +41,7 @@ class BookSearchRequest extends FormRequest
             'page.integer' => 'ページ番号は1以上の整数で指定してください',
             'per_page.min' => '1ページあたりの件数は1以上の整数で指定してください',
             'per_page.integer' => '1ページあたりの件数は1以上の整数で指定してください',
-            'per_page.max' => '1ページあたりの件数は50件以下で指定してください',
+            'per_page.max' => '1ページあたりの件数は50以下の整数で指定してください',
         ];
     }
 }
