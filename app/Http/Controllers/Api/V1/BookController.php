@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\V1\BookSearchRequest;
+use App\Http\Resources\BookResource;
 use App\Services\BookService;
 use Illuminate\Http\JsonResponse;
 
@@ -20,17 +21,17 @@ class BookController extends Controller
     {
         $filters = $request->only(['keyword', 'genre_id']);
 
-        $perPage = (int) $request->input('per_page', 10);
+        $perPage = (int) $request->input('per_page', 20);
 
         $books = $this->bookService->searchBooks($filters, $perPage);
 
-        return response()->json($books);
+        return BookResource::collection($books)->response();
     }
 
     public function show(int $id): JsonResponse
     {
         $book = $this->bookService->getBookById($id);
 
-        return response()->json($book);
+        return (new BookResource($book))->response();
     }
 }
