@@ -53,4 +53,24 @@ class BookService
     {
         $book->delete();
     }
+
+    public function searchBooks(array $filters, int $perPage = 10): LengthAwarePaginator
+    {
+        $query = Book::with('genres')
+            ->withCount('reviews')
+            ->withAvg('reviews', 'rating')
+            ->latest();
+
+        if (! empty($filters['keyword'])) {
+            $query->where('title', 'like', '%'.$filters['keyword'].'%');
+        }
+
+        if (! empty($filters['genre_id'])) {
+            $query->whereHas('genres', function ($q) use ($filters) {
+                $q->whereIn('genres.id', $filters['genre_id']);
+            });
+        }
+
+        return $query->paginate($perPage);
+    }
 }
