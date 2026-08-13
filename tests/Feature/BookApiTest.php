@@ -77,7 +77,7 @@ class BookApiTest extends TestCase
         ];
     }
 
-    public function test_指定した_i_dの書籍詳細が正しく取得できる()
+    public function test_指定したidの書籍詳細が正しく取得できる()
     {
         $user = User::factory()->create();
         $genre = Genre::factory()->create();
@@ -95,7 +95,7 @@ class BookApiTest extends TestCase
             ]);
     }
 
-    public function test_存在しない書籍_i_dを指定した際にエラーレスポンスが返る()
+    public function test_存在しない書籍idを指定した際にエラーレスポンスが返る()
     {
         $response = $this->getJson('/api/v1/books/99999');
 
@@ -172,9 +172,13 @@ class BookApiTest extends TestCase
         ];
     }
 
-    public function test_isb_nが重複している場合、バリデーションエラーメッセージが表示される()
+    public function test_isbnが重複している場合、バリデーションエラーメッセージが表示される()
     {
-        Book::factory()->create(['isbn' => '9784101010014']);
+        $user = User::factory()->create();
+        Book::factory()->create([
+            'isbn' => '9784101010014',
+            'user_id' => $user->id,
+        ]);
         $user = User::factory()->create();
         $genre = Genre::factory()->create();
 
@@ -305,7 +309,7 @@ class BookApiTest extends TestCase
             ->assertJsonPath('errors.isbn.0', 'このISBNは既に登録されています');
     }
 
-    public function test_自分自身の_isb_nを指定して更新する場合はバリデーションエラーにならない()
+    public function test_自分自身のisbnを指定して更新する場合はバリデーションエラーにならない()
     {
         $user = User::factory()->create();
         $genre = Genre::factory()->create();
@@ -330,7 +334,10 @@ class BookApiTest extends TestCase
     // 削除
     public function test_指定したidの書籍情報を削除し関連データが適切に処理される()
     {
-        $book = Book::factory()->create();
+        $user = User::factory()->create();
+        $book = Book::factory()->create([
+            'user_id' => $user->id,
+        ]);
 
         $response = $this->deleteJson("/api/v1/books/{$book->id}");
 
