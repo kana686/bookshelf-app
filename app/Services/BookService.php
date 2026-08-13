@@ -6,7 +6,6 @@ use App\Models\Book;
 use App\Models\Genre;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Auth;
 
 class BookService
 {
@@ -27,8 +26,6 @@ class BookService
 
     public function createBook(array $data): Book
     {
-        $data['user_id'] = Auth::id();
-
         $book = Book::create($data);
 
         if (isset($data['genres'])) {
