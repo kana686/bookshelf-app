@@ -44,7 +44,7 @@ class BookController extends Controller
         $data = $request->validated();
         $data['user_id'] = Auth::id();
 
-        $book = $this->bookService->createBook($request->validated());
+        $book = $this->bookService->createBook($data);
 
         return redirect()->route('books.show', $book)
             ->with('success', '書籍を登録しました');
