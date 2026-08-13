@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class BookService
 {
-    public function getPaginatedBooks(int $perPage = 10): LengthAwarePaginator
+    public function getPaginatedBooks(int $perPage): LengthAwarePaginator
     {
         return Book::with('genres')->latest()->paginate($perPage);
     }
@@ -52,5 +52,25 @@ class BookService
     public function deleteBook(Book $book): void
     {
         $book->delete();
+    }
+
+    public function searchBooks(array $filters, int $perPage): LengthAwarePaginator
+    {
+        $query = Book::with('genres')
+            ->withCount('reviews')
+            ->withAvg('reviews', 'rating')
+            ->latest();
+
+        if (! empty($filters['keyword'])) {
+            $query->where('title', 'like', '%'.$filters['keyword'].'%');
+        }
+
+        if (! empty($filters['genre_id'])) {
+            $query->whereHas('genres', function ($q) use ($filters) {
+                $q->whereIn('genres.id', $filters['genre_id']);
+            });
+        }
+
+        return $query->paginate($perPage);
     }
 }

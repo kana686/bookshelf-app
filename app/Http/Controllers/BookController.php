@@ -19,7 +19,7 @@ class BookController extends Controller
 
     public function index(): View
     {
-        $books = $this->bookService->getPaginatedBooks();
+        $books = $this->bookService->getPaginatedBooks(10);
 
         return view('books.index', compact('books'));
     }
