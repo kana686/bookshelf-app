@@ -7,6 +7,7 @@ use App\Models\Book;
 use App\Services\BookService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 
 class BookController extends Controller
 {
@@ -40,7 +41,10 @@ class BookController extends Controller
 
     public function store(BookRequest $request): RedirectResponse
     {
-        $book = $this->bookService->createBook($request->validated());
+        $data = $request->validated();
+        $data['user_id'] = Auth::id();
+
+        $book = $this->bookService->createBook($data);
 
         return redirect()->route('books.show', $book)
             ->with('success', '書籍を登録しました');
