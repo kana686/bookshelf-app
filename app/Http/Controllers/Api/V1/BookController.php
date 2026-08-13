@@ -46,19 +46,15 @@ class BookController extends Controller
         return (new BookResource($book))->response()->setStatusCode(201);
     }
 
-    public function update(ApiBookRequest $request, int $id): JsonResponse
+    public function update(ApiBookRequest $request, Book $book): JsonResponse
     {
-        $book = Book::findOrFail($id);
-
         $updatedBook = $this->bookService->updateBook($book, $request->validated());
 
         return (new BookResource($updatedBook))->response();
     }
 
-    public function destroy(int $id): JsonResponse
+    public function destroy(Book $book): JsonResponse
     {
-        $book = Book::findOrFail($id);
-
         $this->bookService->deleteBook($book);
 
         return response()->json(null, 204);
