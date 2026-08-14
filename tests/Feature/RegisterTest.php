@@ -36,7 +36,7 @@ class RegisterTest extends TestCase
     }
 
     #[DataProvider('invalidRegisterDataProvider')]
-    public function test_会員登録時バリデーションエラー($field, $invalidValue, $requestDataOverrides, $expectedMessage)
+    public function test_会員登録時バリデーションエラー($field, $requestDataOverrides, $expectedMessage)
     {
         $baseData = [
             'name' => 'テストユーザー',
@@ -61,49 +61,41 @@ class RegisterTest extends TestCase
         return [
             '名前未入力' => [
                 'name',
-                '',
                 ['name' => ''],
                 'お名前を入力してください',
             ],
             '名前256文字以上' => [
                 'name',
-                str_repeat('あ', 256),
                 ['name' => str_repeat('あ', 256)],
                 'お名前は255文字以内で入力してください',
             ],
             'メールアドレス未入力' => [
                 'email',
-                '',
                 ['email' => ''],
                 'メールアドレスを入力してください',
             ],
             'メールアドレス形式不正' => [
                 'email',
-                'invalid-email',
                 ['email' => 'invalid-email'],
                 'メールアドレスはメール形式で入力してください',
             ],
             'メールアドレス256文字以上' => [
                 'email',
-                str_repeat('a', 244).'@example.com',
                 ['email' => str_repeat('a', 244).'@example.com'],
                 'メールアドレスは255文字以内で入力してください',
             ],
             'パスワード未入力' => [
                 'password',
-                '',
                 ['password' => '', 'password_confirmation' => ''],
                 'パスワードを入力してください',
             ],
             'パスワード7文字以下' => [
                 'password',
-                'pass123',
                 ['password' => 'pass123', 'password_confirmation' => 'pass123'],
                 'パスワードは8文字以上で入力してください',
             ],
             'パスワード不一致' => [
                 'password',
-                'different_password',
                 ['password_confirmation' => 'different_password'],
                 'パスワードと一致しません',
             ],
