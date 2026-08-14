@@ -18,7 +18,7 @@ class BookFavoriteFeatureTest extends TestCase
         $this->seed(DatabaseSeeder::class);
     }
 
-    public function test_未認証の状態でにお気に入り一覧ページにアクセスした場合ログイン画面にリダイレクトされる()
+    public function test_未認証の状態でお気に入り一覧ページにアクセスした場合ログイン画面にリダイレクトされる()
     {
         $response = $this->get(route('favorites.index'));
 
@@ -26,7 +26,7 @@ class BookFavoriteFeatureTest extends TestCase
         $response->assertRedirect('/login');
     }
 
-    public function test_認証済みの状態でにお気に入り一覧ページが正しく表示される()
+    public function test_認証済みの状態でお気に入り一覧ページが正しく表示される()
     {
         $user = User::first();
         $books = Book::all();
