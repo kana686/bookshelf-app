@@ -49,7 +49,7 @@ class BookFeatureTest extends TestCase
         }
     }
 
-    public function test_ゲストがルート_ur_lにアクセスし10件表示されること()
+    public function test_ゲストがルートurlにアクセスし10件表示されること()
     {
         $response = $this->get('/');
         $response->assertStatus(200);
@@ -274,7 +274,7 @@ class BookFeatureTest extends TestCase
         ];
     }
 
-    public function test_isb_nが重複している場合、バリデーションエラーメッセージが表示される()
+    public function test_isbnが重複している場合、バリデーションエラーメッセージが表示される()
     {
         $user = User::first();
         $genre = Genre::first();
@@ -450,7 +450,7 @@ class BookFeatureTest extends TestCase
         ];
     }
 
-    public function test_更新時_isb_n重複エラー()
+    public function test_更新時isbn重複エラー()
     {
         $user = User::first();
         $genre = Genre::first();
