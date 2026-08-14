@@ -305,7 +305,7 @@ class BookApiTest extends TestCase
         ];
     }
 
-    public function test_既に登録されている他の書籍の_isb_nを指定した場合にバリデーションエラーとなる()
+    public function test_既に登録されている他の書籍のisbnを指定した場合にバリデーションエラーとなる()
     {
         $user = User::factory()->create();
         $genre = Genre::factory()->create();
