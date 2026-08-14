@@ -52,6 +52,27 @@ class BookApiTest extends TestCase
             ->assertJsonCount(15, 'data');
     }
 
+    public function test_検索条件を維持したままページを移動できる()
+    {
+        $user = User::factory()->create();
+
+        Book::factory()->count(12)->create([
+            'user_id' => $user->id,
+            'title' => 'Laravelの教科書',
+        ]);
+
+        Book::factory()->count(3)->create([
+            'user_id' => $user->id,
+            'title' => 'PHP入門',
+        ]);
+
+        $response = $this->getJson('/api/v1/books?keyword=Laravel&page=2&per_page=10');
+
+        $response->assertStatus(200)
+            ->assertJsonCount(2, 'data')
+            ->assertJsonFragment(['title' => 'Laravelの教科書']);
+    }
+
     #[DataProvider('invalidPaginationDataProvider')]
     public function test_不正なパラメータを指定した際にバリデーションエラーとなる($perPage, $expectedMessage)
     {
@@ -159,16 +180,56 @@ class BookApiTest extends TestCase
     public static function invalidStoreDataProvider()
     {
         return [
-            'タイトル未入力' => ['title', ['title' => ''], 'タイトルを入力してください'],
-            'タイトル256文字以上' => ['title', ['title' => str_repeat('あ', 256)], 'タイトルは255文字以内で入力してください'],
-            '著者名未入力' => ['author', ['author' => ''], '著者名を入力してください'],
-            '著者名256文字以上' => ['author', ['author' => str_repeat('あ', 256)], '著者名は255文字以内で入力してください'],
-            'ISBN未入力' => ['isbn', ['isbn' => ''], 'ISBNを入力してください'],
-            'ISBN 11桁' => ['isbn', ['isbn' => '12345678901'], 'ISBNは10桁または13桁で入力してください'],
-            'ISBN 14桁' => ['isbn', ['isbn' => '12345678901234'], 'ISBNは10桁または13桁で入力してください'],
-            '出版日未入力' => ['published_date', ['published_date' => ''], '出版日を入力してください'],
-            '説明256文字以上' => ['description', ['description' => str_repeat('あ', 256)], '説明は255文字以内で入力してください'],
-            'ジャンル未選択' => ['genres', ['genres' => []], 'ジャンルを1つ以上選択してください'],
+            'タイトル未入力' => [
+                'title',
+                ['title' => ''],
+                'タイトルを入力してください',
+            ],
+            'タイトル256文字以上' => [
+                'title',
+                ['title' => str_repeat('あ', 256)],
+                'タイトルは255文字以内で入力してください',
+            ],
+            '著者名未入力' => [
+                'author',
+                ['author' => ''],
+                '著者名を入力してください',
+            ],
+            '著者名256文字以上' => [
+                'author',
+                ['author' => str_repeat('あ', 256)],
+                '著者名は255文字以内で入力してください',
+            ],
+            'ISBN未入力' => [
+                'isbn',
+                ['isbn' => ''],
+                'ISBNを入力してください',
+            ],
+            'ISBN 11桁' => [
+                'isbn',
+                ['isbn' => '12345678901'],
+                'ISBNは10桁または13桁で入力してください',
+            ],
+            'ISBN 14桁' => [
+                'isbn',
+                ['isbn' => '12345678901234'],
+                'ISBNは10桁または13桁で入力してください',
+            ],
+            '出版日未入力' => [
+                'published_date',
+                ['published_date' => ''],
+                '出版日を入力してください',
+            ],
+            '説明256文字以上' => [
+                'description',
+                ['description' => str_repeat('あ', 256)],
+                '説明は255文字以内で入力してください',
+            ],
+            'ジャンル未選択' => [
+                'genres',
+                ['genres' => []],
+                'ジャンルを1つ以上選択してください',
+            ],
         ];
     }
 
@@ -273,18 +334,50 @@ class BookApiTest extends TestCase
     public static function invalidUpdateDataProvider()
     {
         return [
-            'タイトル未入力' => ['title', ['title' => ''], 'タイトルを入力してください'],
-            'タイトル256文字以上' => ['title', ['title' => str_repeat('あ', 256)], 'タイトルは255文字以内で入力してください'],
-            '著者名未入力' => ['author', ['author' => ''], '著者名を入力してください'],
-            '著者名256文字以上' => ['author', ['author' => str_repeat('あ', 256)], '著者名は255文字以内で入力してください'],
-            'ISBN未入力' => ['isbn', ['isbn' => ''], 'ISBNを入力してください'],
-            'ISBN 11桁' => ['isbn', ['isbn' => '12345678901'], 'ISBNは10桁または13桁で入力してください'],
-            '出版日未入力' => ['published_date', ['published_date' => ''], '出版日を入力してください'],
-            'ジャンル未選択' => ['genres', ['genres' => []], 'ジャンルを1つ以上選択してください'],
+            'タイトル未入力' => [
+                'title',
+                ['title' => ''],
+                'タイトルを入力してください',
+            ],
+            'タイトル256文字以上' => [
+                'title',
+                ['title' => str_repeat('あ', 256)],
+                'タイトルは255文字以内で入力してください',
+            ],
+            '著者名未入力' => [
+                'author',
+                ['author' => ''],
+                '著者名を入力してください',
+            ],
+            '著者名256文字以上' => [
+                'author',
+                ['author' => str_repeat('あ', 256)],
+                '著者名は255文字以内で入力してください',
+            ],
+            'ISBN未入力' => [
+                'isbn',
+                ['isbn' => ''],
+                'ISBNを入力してください',
+            ],
+            'ISBN 11桁' => [
+                'isbn',
+                ['isbn' => '12345678901'],
+                'ISBNは10桁または13桁で入力してください',
+            ],
+            '出版日未入力' => [
+                'published_date',
+                ['published_date' => ''],
+                '出版日を入力してください',
+            ],
+            'ジャンル未選択' => [
+                'genres',
+                ['genres' => []],
+                'ジャンルを1つ以上選択してください',
+            ],
         ];
     }
 
-    public function test_既に登録されている他の書籍の_isb_nを指定した場合にバリデーションエラーとなる()
+    public function test_既に登録されている他の書籍のisbnを指定した場合にバリデーションエラーとなる()
     {
         $user = User::factory()->create();
         $genre = Genre::factory()->create();

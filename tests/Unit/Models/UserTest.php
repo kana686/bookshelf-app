@@ -27,7 +27,7 @@ class UserTest extends TestCase
         $this->assertTrue(Hash::check($attributes['password'], $user->password));
     }
 
-    public function test_hiddenに設定された属性が配列や_jso_n変換時に含まれない()
+    public function test_hiddenに設定された属性が配列やjson変換時に含まれない()
     {
         $user = new User([
             'name' => 'テストユーザー',

@@ -39,7 +39,7 @@ class RankingFeatureTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_レビュー平均評価の高い_to_p10の書籍が降順で並び順通りに表示される()
+    public function test_レビュー平均評価の高いtop10の書籍が降順で並び順通りに表示される()
     {
         $user = User::factory()->create();
 
