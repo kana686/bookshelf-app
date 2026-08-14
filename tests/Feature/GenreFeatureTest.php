@@ -131,8 +131,14 @@ class GenreFeatureTest extends TestCase
     public static function genreValidationDataProvider()
     {
         return [
-            '未入力' => [['name' => ''], 'name', 'ジャンル名を入力してください'],
-            '256文字以上' => [['name' => str_repeat('あ', 256)], 'name', 'ジャンル名は255文字以内で入力してください'],
+            '未入力' => [
+                ['name' => ''],
+                'name', 'ジャンル名を入力してください',
+            ],
+            '256文字以上' => [
+                ['name' => str_repeat('あ', 256)],
+                'name', 'ジャンル名は255文字以内で入力してください',
+            ],
         ];
     }
 
@@ -182,23 +188,29 @@ class GenreFeatureTest extends TestCase
 
     // 更新時バリデーションエラー
     #[DataProvider('invalidGenreDataProvider')]
-    public function test_更新時バリデーションエラー($name, $expectedMessage)
+    public function test_更新時バリデーションエラー($inputData, $expectedErrorField, $expectedErrorMessage)
     {
         $user = User::first();
         $genre = Genre::first();
 
-        $response = $this->actingAs($user)->put(route('genres.update', $genre), [
-            'name' => $name,
-        ]);
+        $response = $this->actingAs($user)->put(route('genres.update', $genre), $inputData);
 
-        $response->assertSessionHasErrors(['name' => $expectedMessage]);
+        $response->assertSessionHasErrors([$expectedErrorField => $expectedErrorMessage]);
     }
 
     public static function invalidGenreDataProvider()
     {
         return [
-            'ジャンル名未入力' => ['', 'ジャンル名を入力してください'],
-            'ジャンル名256文字以上' => [str_repeat('あ', 256), 'ジャンル名は255文字以内で入力してください'],
+            'ジャンル名未入力' => [
+                ['name' => ''],
+                'name',
+                'ジャンル名を入力してください',
+            ],
+            'ジャンル名256文字以上' => [
+                ['name' => str_repeat('あ', 256)],
+                'name',
+                'ジャンル名は255文字以内で入力してください',
+            ],
         ];
     }
 
