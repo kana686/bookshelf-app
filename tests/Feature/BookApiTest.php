@@ -52,6 +52,27 @@ class BookApiTest extends TestCase
             ->assertJsonCount(15, 'data');
     }
 
+    public function test_検索条件を維持したままページを移動できる()
+    {
+        $user = User::factory()->create();
+
+        Book::factory()->count(12)->create([
+            'user_id' => $user->id,
+            'title' => 'Laravelの教科書',
+        ]);
+
+        Book::factory()->count(3)->create([
+            'user_id' => $user->id,
+            'title' => 'PHP入門',
+        ]);
+
+        $response = $this->getJson('/api/v1/books?keyword=Laravel&page=2&per_page=10');
+
+        $response->assertStatus(200)
+            ->assertJsonCount(2, 'data')
+            ->assertJsonFragment(['title' => 'Laravelの教科書']);
+    }
+
     #[DataProvider('invalidPaginationDataProvider')]
     public function test_不正なパラメータを指定した際にバリデーションエラーとなる($perPage, $expectedMessage)
     {
