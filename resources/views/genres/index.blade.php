@@ -60,10 +60,6 @@
                             </tbody>
                         </table>
                     @endif
-
-                    <div class="mt-6">
-                        {{ $genres->links() }}
-                    </div>
                 </div>
             </div>
         </div>
