@@ -7,6 +7,7 @@ use App\Http\Controllers\GenreController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\RankingController;
 use App\Http\Controllers\RegisteredUserController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\Route;
 
@@ -57,6 +58,8 @@ Route::middleware('auth')->group(function () {
         Route::put('{genre}', 'update')->name('genres.update');
         Route::delete('{genre}', 'destroy')->name('genres.destroy');
     });
+
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 });
 
 // 公開
@@ -69,6 +72,5 @@ Route::controller(BookController::class)->group(function () {
 Route::get('/ranking', [RankingController::class, 'index'])->name('ranking.index');
 
 // 応用編仮ルート
-Route::view('/reports', 'reports.index')->name('reports.index');
 Route::view('/reading-plans', 'reading-plans.index')->name('reading-plans.index');
 Route::view('/notifications', 'notifications.index')->name('notifications.index');
