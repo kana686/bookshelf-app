@@ -12,7 +12,7 @@ class GoogleBooksApiTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_有効な_isb_nを指定してリクエストした際正しい書籍情報が返却される()
+    public function test_有効なisbnを指定してリクエストした際正しい書籍情報が返却される()
     {
         $user = User::factory()->create();
 
@@ -51,7 +51,21 @@ class GoogleBooksApiTest extends TestCase
 
         $response = $this->actingAs($user)->getJson('/books/isbn/0000000000000');
 
-        $response->assertStatus(404);
+        $response->assertStatus(404)->assertJson([
+            'error' => '該当する書籍が見つかりませんでした。',
+        ]);
+    }
+
+    public function test_不正な形式のisbnを指定した際バリデーションエラーメッセージが返る()
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->getJson('/books/isbn/12345');
+
+        $response->assertStatus(422)
+            ->assertJson([
+                'error' => 'ISBNは13桁で入力してください。',
+            ]);
     }
 
     public function test_isbnやpublished_dateが未入力の状態でも書籍が正常に登録できる()
