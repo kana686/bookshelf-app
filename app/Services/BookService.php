@@ -9,11 +9,6 @@ use Illuminate\Database\Eloquent\Collection;
 
 class BookService
 {
-    public function getPaginatedBooks(int $perPage): LengthAwarePaginator
-    {
-        return Book::with('genres')->latest()->paginate($perPage);
-    }
-
     public function getBookById(int $id): Book
     {
         return Book::with(['genres', 'reviews.user', 'usersWhoFavorited'])->findOrFail($id);
