@@ -35,12 +35,13 @@ Route::middleware('auth')->group(function () {
 
     Route::controller(BookController::class)->prefix('books')->group(function () {
         Route::get('create', 'create')->name('books.create');
-        Route::get('isbn/{isbn}', BookIsbnController::class)->name('books.isbn');
         Route::post('', 'store')->name('books.store');
         Route::get('{book}/edit', 'edit')->name('books.edit');
         Route::put('{book}', 'update')->name('books.update');
         Route::delete('{book}', 'destroy')->name('books.destroy');
     });
+
+    Route::get('books/isbn/{isbn}', BookIsbnController::class)->name('books.isbn');
 
     Route::post('/reviews/{review}/like', [LikeController::class, 'store'])->name('reviews.like');
 
