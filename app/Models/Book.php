@@ -27,7 +27,7 @@ class Book extends Model
     protected function publishedDate(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => $value ? Carbon::parse($value)->format('Y-m-d') : null,
+            get: fn ($value) => $value ? Carbon::parse($value) : null,
         );
     }
 
