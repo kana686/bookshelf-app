@@ -59,13 +59,38 @@ class BookService
             ->latest();
 
         if (! empty($filters['keyword'])) {
-            $query->where('title', 'like', '%'.$filters['keyword'].'%');
+            $keyword = $filters['keyword'];
+            $query->where(function ($q) use ($keyword) {
+                $q->where('title', 'like', '%'.$keyword.'%')
+                    ->orWhere('author', 'like', '%'.$keyword.'%');
+            });
         }
 
-        if (! empty($filters['genre_id'])) {
-            $query->whereHas('genres', function ($q) use ($filters) {
-                $q->whereIn('genres.id', $filters['genre_id']);
+        $genreInput = $filters['genre_id'] ?? $filters['genre'] ?? null;
+
+        if (! empty($genreInput)) {
+            $genreIds = is_array($genreInput) ? $genreInput : [$genreInput];
+
+            $query->whereHas('genres', function ($q) use ($genreIds) {
+                $q->whereIn('genres.id', $genreIds);
             });
+        }
+
+        $sort = $filters['sort'] ?? 'newest';
+        switch ($sort) {
+            case 'oldest':
+                $query->oldest();
+                break;
+            case 'title':
+                $query->orderBy('title', 'asc');
+                break;
+            case 'rating':
+                $query->orderByDesc('reviews_avg_rating');
+                break;
+            case 'newest':
+            default:
+                $query->latest();
+                break;
         }
 
         return $query->paginate($perPage);

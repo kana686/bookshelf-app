@@ -67,3 +67,8 @@ Route::controller(BookController::class)->group(function () {
 });
 
 Route::get('/ranking', [RankingController::class, 'index'])->name('ranking.index');
+
+// 応用編仮ルート
+Route::view('/reports', 'reports.index')->name('reports.index');
+Route::view('/reading-plans', 'reading-plans.index')->name('reading-plans.index');
+Route::view('/notifications', 'notifications.index')->name('notifications.index');
