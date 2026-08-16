@@ -2,10 +2,10 @@
 
 use App\Http\Controllers\AuthenticatedSessionController;
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\BookIsbnController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\GenreController;
 use App\Http\Controllers\LikeController;
-use App\Http\Controllers\BookIsbnController;
 use App\Http\Controllers\RankingController;
 use App\Http\Controllers\RegisteredUserController;
 use App\Http\Controllers\ReportController;
