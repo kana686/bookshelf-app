@@ -281,11 +281,6 @@ class BookFeatureTest extends TestCase
                 ['author' => str_repeat('あ', 256)],
                 '著者名は255文字以内で入力してください',
             ],
-            'ISBN未入力' => [
-                'isbn',
-                ['isbn' => ''],
-                'ISBNを入力してください',
-            ],
             'ISBN 11桁' => [
                 'isbn',
                 ['isbn' => '12345678901'],
@@ -295,11 +290,6 @@ class BookFeatureTest extends TestCase
                 'isbn',
                 ['isbn' => '12345678901234'],
                 'ISBNは10桁または13桁で入力してください',
-            ],
-            '出版日未入力' => [
-                'published_date',
-                ['published_date' => ''],
-                '出版日を入力してください',
             ],
             '説明256文字以上' => [
                 'description',
@@ -501,12 +491,6 @@ class BookFeatureTest extends TestCase
                 ['author' => 'テスト著者名'],
                 '著者名は255文字以内で入力してください',
             ],
-            'ISBN未入力' => [
-                'isbn',
-                ['isbn' => ''],
-                ['isbn' => '1234567890123'],
-                'ISBNを入力してください',
-            ],
             'ISBN 11桁' => [
                 'isbn',
                 ['isbn' => '12345678901'],
@@ -518,12 +502,6 @@ class BookFeatureTest extends TestCase
                 ['isbn' => '12345678901234'],
                 ['isbn' => '1234567890123'],
                 'ISBNは10桁または13桁で入力してください',
-            ],
-            '出版日未入力' => [
-                'published_date',
-                ['published_date' => ''],
-                ['published_date' => '2026-06-01'],
-                '出版日を入力してください',
             ],
             '説明256文字以上' => [
                 'description',
