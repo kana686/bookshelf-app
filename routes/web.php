@@ -5,6 +5,7 @@ use App\Http\Controllers\BookController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\GenreController;
 use App\Http\Controllers\LikeController;
+use App\Http\Controllers\BookIsbnController;
 use App\Http\Controllers\RankingController;
 use App\Http\Controllers\RegisteredUserController;
 use App\Http\Controllers\ReportController;
@@ -34,6 +35,7 @@ Route::middleware('auth')->group(function () {
 
     Route::controller(BookController::class)->prefix('books')->group(function () {
         Route::get('create', 'create')->name('books.create');
+        Route::get('isbn/{isbn}', BookIsbnController::class)->name('books.isbn');
         Route::post('', 'store')->name('books.store');
         Route::get('{book}/edit', 'edit')->name('books.edit');
         Route::put('{book}', 'update')->name('books.update');
