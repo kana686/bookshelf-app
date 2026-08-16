@@ -20,7 +20,7 @@ class BookTest extends TestCase
         $this->assertEquals('テストタイトル', $book->title);
         $this->assertEquals('テスト著者', $book->author);
         $this->assertEquals('9784101010999', $book->isbn);
-        $this->assertEquals('2026-01-01', $book->published_date);
+        $this->assertEquals('2026-01-01', $book->published_date->format('Y-m-d'));
         $this->assertEquals('テスト用の説明文', $book->description);
     }
 }
