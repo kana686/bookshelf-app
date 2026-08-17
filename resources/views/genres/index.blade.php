@@ -59,6 +59,9 @@
                                 @endforeach
                             </tbody>
                         </table>
+                        <div class="mt-6">
+                            {{ $genres->links() }}
+                        </div>
                     @endif
                 </div>
             </div>
