@@ -28,9 +28,7 @@
     git checkout feature/advanced
     ```
 
-    - 💡 Google Books APIキーの設定について:
-      応用機能の書籍検索等を利用するため、環境構築完了後に .env ファイルへ以下の設定を追加してください。
-
+    - 💡 Google Books APIキーの設定について:`feature/advanced`に切り替えた後、応用機能の書籍検索等を利用するため、`.env`ファイルへ以下の設定を追加してください。
     ```env
     GOOGLE_BOOKS_API_KEY=あなたのAPIキーを設定してください
     ```
