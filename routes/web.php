@@ -74,6 +74,19 @@ Route::controller(BookController::class)->group(function () {
 
 Route::get('/ranking', [RankingController::class, 'index'])->name('ranking.index');
 
-// 応用編仮ルート
-Route::view('/reading-plans', 'reading-plans.index')->name('reading-plans.index');
-Route::view('/notifications', 'notifications.index')->name('notifications.index');
+// 応用編未実装画面ルート
+Route::get('/reading-plans', function () {
+    return '<h1>読書計画一覧</h1><p>現在、こちらの機能は未実装です。</p>';
+})->name('reading-plans.index');
+
+Route::get('/reading-plans/create', function () {
+    return '<h1>読書計画作成</h1><p>現在、こちらの機能は未実装です。</p>';
+})->name('reading-plans.create');
+
+Route::get('/reading-plans/{plan}/edit', function ($plan) {
+    return '<h1>読書計画編集</h1><p>現在、こちらの機能は未実装です。</p>';
+})->name('reading-plans.edit');
+
+Route::get('/notifications', function () {
+    return '<h1>通知一覧</h1><p>現在、こちらの機能は未実装です。</p>';
+})->name('notifications.index');
