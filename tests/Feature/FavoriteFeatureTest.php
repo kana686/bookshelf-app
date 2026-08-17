@@ -8,7 +8,7 @@ use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class BookFavoriteFeatureTest extends TestCase
+class FavoriteFeatureTest extends TestCase
 {
     use RefreshDatabase;
 

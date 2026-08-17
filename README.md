@@ -12,26 +12,9 @@
 - 未ログインユーザー：書籍一覧、書籍詳細、ランキングの閲覧が可能です。
 - **GitHub URL:** https://github.com/kana686/bookshelf-app.git
 
-## 提出構成について
-
-本リポジトリでは、模擬案件の実装ステップに合わせてブランチを分けて管理しています。
-
-- **基本機能 (`main` ブランチ)**
-    - アプリケーションの基本機能を実装・テスト済みです。まずはこのブランチのコードが完成版となります。
-- **応用機能 (`feature/advanced` ブランチ)**
-    - より発展的な機能の実装に取り組んでいます。
-    - **現状**: 一部の応用機能（検索・フィルタ・ISBN検索・読書レポート等）を実装済みです。読書計画や通知機能などは未実装プレースホルダー対応となっています。提出日(卒業日8/17)時点で実装途中ですが、進捗状況の共有として公開しています。
-    - 応用編のブランチを確認する場合は、以下のコマンドで切り替えてください。
-
-    ```bash
-    git fetch origin
-    git checkout feature/advanced
-    ```
-
-    - 💡 Google Books APIキーの設定について:`feature/advanced`に切り替えた後、応用機能の書籍検索等を利用するため、`.env`ファイルへ以下の設定を追加してください。
-    ```env
-    GOOGLE_BOOKS_API_KEY=あなたのAPIキーを設定してください
-    ```
+> **【開発・実装状況について】**
+> 本リポジトリは、模擬案件の提出日（卒業日2026年8月17日）時点の進捗状況となります。
+> 基本機能および応用機能の一部（キーワード検索、ジャンルフィルタ、並び順ソート、ISBN検索、読書レポートの統計表示など）は実装済みですが、一部の応用機能（読書計画画面、Sanctum認証、日次バッチ処理など）は現在未実装（または一部プレースホルダー）の段階となっております。あらかじめご了承ください。
 
 ## 目次
 
@@ -129,21 +112,6 @@
     git clone https://github.com/kana686/bookshelf-app.git .
     ```
 
-    **💡 補足：応用機能ブランチの確認について**
-
-    > 本リポジトリには「基本編」と「応用編」のブランチがあります。
-    > `git fetch origin` を実行しておくことで、基本編の確認後、いつでも応用編のブランチに切り替えて検証できるようになります。
-    >
-    > ```bash
-    > # リモートリポジトリから最新のブランチ情報を取得
-    > git fetch origin
-    >
-    > # 応用編ブランチへ切り替え
-    > git checkout feature/advanced
-    > ```
-    >
-    > ※ 応用編の環境構築手順は、応用編のブランチに切り替えた後のREADMEをご確認ください。
-
 2.  環境変数の設定
 
     ```bash
@@ -178,12 +146,12 @@
 
     ```bash
     docker run --rm \
-        -u "$(id -u):$(id -g)" \
-        -v "$(pwd):/var/www/html" \
-        -w /var/www/html \
-        -e COMPOSER_CACHE_DIR=/tmp/composer_cache \
-        laravelsail/php84-composer:latest \
-        composer install
+    -u "$(id -u):$(id -g)" \
+    -v "$(pwd):/var/www/html" \
+    -w /var/www/html \
+    -e COMPOSER_CACHE_DIR=/tmp/composer_cache \
+    composer:latest \
+    composer install --ignore-platform-reqs
     ```
 
     <details>
