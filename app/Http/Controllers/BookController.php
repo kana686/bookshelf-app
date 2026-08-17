@@ -7,6 +7,7 @@ use App\Models\Book;
 use App\Services\BookService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class BookController extends Controller
@@ -18,11 +19,15 @@ class BookController extends Controller
         $this->bookService = $bookService;
     }
 
-    public function index(): View
+    public function index(Request $request): View
     {
-        $books = $this->bookService->getPaginatedBooks(10);
+        $filters = $request->only(['keyword', 'genre', 'sort']);
 
-        return view('books.index', compact('books'));
+        $books = $this->bookService->searchBooks($filters, 10);
+
+        $genres = $this->bookService->getAllGenres();
+
+        return view('books.index', compact('books', 'genres'));
     }
 
     public function show(Book $book): View
