@@ -252,7 +252,8 @@
 
     ```bash
     # パッケージのインストール
-    sail npm install
+    # ※依存関係で競合が発生する場合は --legacy-peer-deps を使用してください
+    sail npm install --legacy-peer-deps
     ```
 
     **開発用ビルド（変更監視モード）**
