@@ -248,12 +248,17 @@
     パスワード: password
 
 8.  フロントエンドの準備
-    パッケージをインストールし、開発用ビルドを実行します。
+    パッケージをインストールし、ビルドと開発用サーバーの起動を確認します。
 
     ```bash
     # パッケージのインストール
-    # ※依存関係で競合が発生する場合は --legacy-peer-deps を使用してください
-    sail npm install --legacy-peer-deps
+    sail npm install
+    ```
+
+    **本番用ビルドの確認**
+
+    ```bash
+    sail npm run build
     ```
 
     **開発用ビルド（変更監視モード）**
